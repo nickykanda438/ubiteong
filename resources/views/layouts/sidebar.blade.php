@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fondation KAZWAZWA</title>
+    <title>@yield('title', 'Fondation KAZWAZWA')</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -75,6 +75,23 @@
                         <span class="ms-3 font-sans">Cadres ONG</span>
                     </a>
                 </li>
+                <li>
+    <a href="#" class="flex items-center p-2 text-white rounded-lg hover:bg-white/10 group transition duration-75">
+        <svg class="w-5 h-5 text-gray-300 group-hover:text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path>
+        </svg>
+        <span class="ms-3 font-sans">Communiqués</span>
+    </a>
+</li>
+
+<li>
+    <a href="#" class="flex items-center p-2 text-white rounded-lg hover:bg-white/10 group transition duration-75">
+        <svg class="w-5 h-5 text-gray-300 group-hover:text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+        </svg>
+        <span class="ms-3 font-sans">Événements</span>
+    </a>
+</li>
 
                 <li class="pt-4">
                     <a href="#" class="flex items-center p-3 text-white bg-kzz-green rounded-xl shadow-lg hover:bg-opacity-90 transition transform hover:scale-[1.02]">
@@ -86,9 +103,7 @@
         </div>
     </aside>
 
-    <main class="p-4 sm:ml-64 pt-24 min-h-screen bg-kzz-gray">
-        @yield('content')
-    </main>
+    
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 </body>
