@@ -12,9 +12,24 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    // --- Profil Utilisateur ---
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // --- MODULE MEMBRES (Dossier : resources/views/membres) ---
+    
+    // URL : http://127.0.0.1:8000/membres
+    Route::get('/membres', function () {
+        // Laravel cherche : resources/views/membres/index.blade.php
+        return view('membres.index'); 
+    })->name('membres.index');
+
+    // URL : http://127.0.0.1:8000/membres/creer
+    Route::get('/membres/creer', function () {
+        // Laravel cherche : resources/views/membres/create.blade.php
+        return view('membres.create');
+    })->name('membres.create');
 });
 
 require __DIR__.'/auth.php';
