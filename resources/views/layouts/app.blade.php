@@ -14,21 +14,23 @@
         <script src="https://unpkg.com/flowbite@latest/dist/flowbite.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
-    <body class="font-sans antialiased">
-    <div class="min-h-screen bg-gray-100">
-        @include('layouts.sidebar')
+    <body class="font-sans antialiased bg-kzz-gray">
+    <div class="min-h-screen">
+        
+        @include('layouts.sidebar') 
 
-        {{-- @isset($header)
-            <header class="bg-white shadow">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8"></div>
-            </header>
-        @endisset --}}
+        <main class="p-4 sm:ml-64 pt-24 min-h-screen">
+            <div class="mt-2">
+                @if (request()->routeIs('dashboard'))
+                    @include('partials.dashboard')
+                @else
+                    @yield('content')
+                @endif
+            </div>
+        </main>
 
-        <main class="p-4 sm:ml-64 pt-4 min-h-screen bg-kzz-gray">
-        <div class="mt-0"> @include('partials.dashboard')
     </div>
-</main>
-    </div>
-</body>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+</body>
 </html>

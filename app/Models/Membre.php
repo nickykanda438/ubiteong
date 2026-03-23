@@ -27,5 +27,4 @@ class Membre extends Model
         'adresse_membre'
     ];
 
-
 }
