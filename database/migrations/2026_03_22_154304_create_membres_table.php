@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('membres', function (Blueprint $table) {
@@ -25,6 +22,7 @@ return new class extends Migration
             $table->string('type_membre');
             $table->string('photo_membre')->nullable();
             $table->string('piece_jointe')->nullable();
+            $table->softDeletes();
             $table->text('adresse_membre');
             $table->timestamps();
         });
