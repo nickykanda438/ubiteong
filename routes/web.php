@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\MembreController; // Importez le contrôleur ici
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -12,20 +13,32 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    
     // --- Profil Utilisateur ---
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
-    Route::get('/membres', function () {
-        return view('membres.index'); 
-    })->name('membres.index');
-
-    // URL : http://127.0.0.1:8000/membres/creer
-    Route::get('/membres/creer', function () {
-        // Laravel cherche : resources/views/membres/create.blade.php
-        return view('membres.create');
-    })->name('membres.create');
+    // --- Gestion des Membres (Lien avec le Contrôleur) ---
+    
+    // Liste et Statistiques
+    Route::get('/membres', [MembreController::class, 'index'])->name('membres.index');
+    
+    // Formulaire de création
+    Route::get('/membres/creer', [MembreController::class, 'create'])->name('membres.create');
+    
+    // Enregistrement des données (Méthode POST)
+    Route::post('/membres', [MembreController::class, 'store'])->name('membres.store');
+    
+    // Edition et Mise à jour
+    Route::get('/membres/{membre}/edit', [MembreController::class, 'edit'])->name('membres.edit');
+    Route::put('/membres/{membre}', [MembreController::class, 'update'])->name('membres.update');
+    
+    // Suppression
+    Route::delete('/membres/{membre}', [MembreController::class, 'destroy'])->name('membres.destroy');
+    
+    // Génération de la carte
+    Route::get('/membres/{membre}/carte', [MembreController::class, 'generateCard'])->name('membres.generateCard');
 });
 
 require __DIR__.'/auth.php';

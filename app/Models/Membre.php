@@ -27,4 +27,17 @@ class Membre extends Model
         'adresse_membre'
     ];
 
+    protected $casts = [
+    'date_naissance' => 'date',
+    'date_adhesion' => 'date',
+];
+
+public function getPhotoUrlAttribute()
+{
+    if ($this->photo_membre) {
+        return asset('storage/' . $this->photo_membre);
+    }
+    return asset('images/default-avatar.png');
+}
+
 }
