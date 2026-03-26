@@ -2,45 +2,60 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MembreController;
-use App\Http\Controllers\DocumentController; // Importez le contrôleur de documents
+use App\Http\Controllers\DocumentController; 
+use App\Http\Controllers\CadreController; // Import indispensable pour les cadres
 use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes - ONG KAZWAZWA
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+// Dashboard protégé
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// Groupe de routes nécessitant une authentification
 Route::middleware('auth')->group(function () {
     
-    // --- Profil Utilisateur ---
+    // --- PROFIL UTILISATEUR ---
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
-    // --- Gestion des Membres ---
-    Route::get('/membres', [MembreController::class, 'index'])->name('membres.index');
-    Route::get('/membres/creer', [MembreController::class, 'create'])->name('membres.create');
-    Route::post('/membres', [MembreController::class, 'store'])->name('membres.store');
-    Route::get('/membres/{membre}/edit', [MembreController::class, 'edit'])->name('membres.edit');
-    Route::put('/membres/{membre}', [MembreController::class, 'update'])->name('membres.update');
-    Route::delete('/membres/{membre}', [MembreController::class, 'destroy'])->name('membres.destroy');
-    Route::get('/membres/{membre}/carte', [MembreController::class, 'generateCard'])->name('membres.generateCard');
+    // --- GESTION DES MEMBRES ---
+    Route::prefix('membres')->name('membres.')->group(function () {
+        Route::get('/', [MembreController::class, 'index'])->name('index');
+        Route::get('/creer', [MembreController::class, 'create'])->name('create');
+        Route::post('/', [MembreController::class, 'store'])->name('store');
+        Route::get('/{membre}/edit', [MembreController::class, 'edit'])->name('edit');
+        Route::put('/{membre}', [MembreController::class, 'update'])->name('update');
+        Route::delete('/{membre}', [MembreController::class, 'destroy'])->name('destroy');
+        Route::get('/{membre}/carte', [MembreController::class, 'generateCard'])->name('generateCard');
+    });
 
-    // --- Gestion des Documents (KAZWAZWA) ---
-    // Liste et recherche
-    Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index');
-    
-    // Enregistrement
-    Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store');
-    
-    // Visualisation (Lire)
-    Route::get('/documents/{document}', [DocumentController::class, 'show'])->name('documents.show');
-    
-    // Téléchargement
-    Route::get('/documents/{document}/download', [DocumentController::class, 'download'])->name('documents.download');
+    // --- GESTION DES DOCUMENTS ---
+    Route::prefix('documents')->name('documents.')->group(function () {
+        Route::get('/', [DocumentController::class, 'index'])->name('index');
+        Route::post('/', [DocumentController::class, 'store'])->name('store');
+        Route::get('/{document}', [DocumentController::class, 'show'])->name('show');
+        Route::get('/{document}/download', [DocumentController::class, 'download'])->name('download');
+    });
+
+    // --- GESTION DES CADRES (Haut Placé) ---
+    Route::prefix('cadres')->name('cadres.')->group(function () {
+        Route::get('/', [CadreController::class, 'index'])->name('index');
+        Route::post('/', [CadreController::class, 'store'])->name('store');
+        Route::get('/{cadre}', [CadreController::class, 'show'])->name('show');
+        Route::put('/{cadre}', [CadreController::class, 'update'])->name('update');
+        Route::delete('/{cadre}', [CadreController::class, 'destroy'])->name('destroy');
+    });
     
 });
 

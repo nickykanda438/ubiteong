@@ -69,7 +69,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="flex items-center p-2 text-white rounded-lg hover:bg-white/10 group">
+                    <a href="{{route('cadres.index')}}" class="flex items-center p-2 text-white rounded-lg hover:bg-white/10 group">
                         <svg class="w-5 h-5 text-gray-300 group-hover:text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
                         <span class="ms-3 font-sans">Cadres ONG</span>
                     </a>
