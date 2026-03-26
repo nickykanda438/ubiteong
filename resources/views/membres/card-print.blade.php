@@ -3,130 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carte de Membre - {{ $membre->nom_complet }}</title>
+    <title>Carte Membre - {{ $membre->nom_complet }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Configuration pour l'imprimante */
-        @page {
-            size: 86mm 54mm;
-            margin: 0;
-        }
-        @media print {
-            .no-print { display: none; }
-            body { margin: 0; padding: 0; background: white; }
-            .card-container { box-shadow: none; border: none; }
-        }
-        body {
-            font-family: 'sans-serif';
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #f3f4f6;
-        }
+        body { font-family: 'Montserrat', sans-serif; background-color: #f3f4f6; }
+        .card-container { width: 86mm; height: 54mm; position: relative; background: white; overflow: hidden; display: flex; }
+        .sidebar { width: 32%; background-color: #0c4a6e; color: white; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 8px 4px; z-index: 10; }
+        .main-content { width: 68%; padding: 8px 12px; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
+        .watermark { position: absolute; top: 50%; left: 55%; transform: translate(-50%, -50%); opacity: 0.04; width: 70%; pointer-events: none; }
     </style>
 </head>
-<body>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
 
-    <div class="no-print fixed top-5 right-5">
-        <button onclick="window.print()" class="bg-blue-900 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-800 transition">
-            Imprimer la carte
-        </button>
-        <a href="{{ route('membres.index') }}" class="ml-2 bg-gray-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-gray-600 transition">
+    <div class="mb-6 flex gap-4 no-print">
+        <a href="{{ route('membres.index') }}" class="flex items-center gap-2 bg-gray-800 text-white px-5 py-2 rounded-lg font-semibold hover:bg-gray-900 transition shadow-md">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             Retour
         </a>
+        <button onclick="downloadCard()" class="flex items-center gap-2 bg-green-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-green-700 transition shadow-md">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            Télécharger JPG
+        </button>
     </div>
 
-    <div class="card-container relative w-[86mm] h-[54mm] bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden p-3 box-border">
+    <div id="memberCard" class="card-container rounded-xl shadow-2xl border border-gray-200">
         
-        <div class="flex justify-between items-start mb-2">
-            <div class="flex items-center gap-1.5">
-                <div class="w-8 h-8 bg-blue-900 rounded-full flex items-center justify-center p-1">
-                    <img src="{{ asset('images/logo_ong.png') }}" alt="Logo" class="w-full h-full object-contain">
-                </div>
-                <div>
-                    <h2 class="text-blue-900 font-black text-[12px] leading-tight uppercase">ONG ESPOIR GLOBAL</h2>
-                    <p class="text-[6px] text-gray-600 font-bold uppercase tracking-tighter">Solidarité • Développement • Action</p>
-                </div>
+        <div class="sidebar shadow-xl">
+            <div class="text-center">
+                <img src="{{ asset('images/logo_ong.png') }}" class="w-9 h-9 mx-auto mb-1 object-contain">
+                <h2 class="text-[7px] font-black uppercase leading-tight">Fondation Kazwazwa</h2>
+                <p class="text-[3.5px] opacity-70 tracking-widest leading-tight">SOLIDARITÉ • DÉVELOPPEMENT</p>
             </div>
-            <div class="text-right">
-                <span class="text-[7px] font-bold text-gray-800 uppercase italic">{{ $membre->type_membre }}</span>
-                <div class="mt-0.5">
-                    <img src="{{ asset('images/drc_flag.png') }}" alt="DRC" class="w-6 h-3.5 shadow-sm inline-block">
+
+            <div class="w-20 h-24 border-[1.5px] border-white/30 rounded-lg overflow-hidden bg-slate-800 shadow-lg">
+                @if($membre->photo_membre)
+                    <img src="{{ asset('storage/' . $membre->photo_membre) }}" class="w-full h-full object-cover">
+                @else
+                    <div class="flex items-center justify-center h-full text-[6px] text-gray-400">PHOTO</div>
+                @endif
+            </div>
+
+            <div class="text-center w-full px-1">
+                <p class="text-[8px] font-extrabold uppercase truncate leading-tight">{{ $membre->nom_complet }}</p>
+                <div class="mt-1 bg-green-600 text-white text-[7px] py-0.5 px-2 rounded-full font-bold uppercase tracking-tighter inline-block">
+                    {{ $membre->fonction }}
                 </div>
             </div>
         </div>
 
-        <div class="flex gap-3">
-            <div class="flex flex-col items-center w-1/4">
-                <div class="p-0.5 border border-blue-900 rounded-lg">
-                    @if($membre->photo_membre)
-                        <img src="{{ asset('storage/' . $membre->photo_membre) }}" class="w-16 h-20 object-cover rounded-md bg-gray-100">
-                    @else
-                        <div class="w-16 h-20 bg-gray-200 flex items-center justify-center text-[8px] text-center">PAS DE PHOTO</div>
-                    @endif
+        <div class="main-content bg-white">
+            <img src="{{ asset('images/logo_ong.png') }}" class="watermark">
+
+            <div class="flex justify-between items-start border-b border-gray-100 pb-1">
+                <div>
+                    <h3 class="text-[5.5px] font-bold text-gray-400 uppercase tracking-widest">Carte de Membre Professionnel</h3>
+                    <h1 class="text-blue-900 font-black text-[10px] uppercase leading-none mt-0.5">Fondation Kazwazwa</h1>
                 </div>
-                <div class="mt-1 text-center">
-                    <span class="bg-green-600 text-white text-[6px] font-bold px-1.5 py-0.5 rounded-full uppercase">
-                        {{ $membre->qualite ?? 'Membre' }}
+                <div class="text-right">
+                    <p class="text-[5px] font-black text-gray-800 uppercase leading-none mb-1">{{ $membre->type_membre }}</p>
+                    <img src="{{ asset('images/drc_flag.png') }}" class="w-6 h-3.5 shadow-sm rounded-sm inline-block">
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-1.5 mt-2">
+                <div class="flex gap-4">
+                    <div class="min-w-[70px]">
+                        <label class="text-[5px] text-gray-400 font-bold uppercase block">Nom :</label>
+                        <span class="text-[9px] font-extrabold text-gray-900 uppercase leading-none">{{ explode(' ', $membre->nom_complet)[0] }}</span>
+                    </div>
+                    <div>
+                        <label class="text-[5px] text-gray-400 font-bold uppercase block">Postnom :</label>
+                        <span class="text-[9px] font-extrabold text-gray-900 uppercase leading-none">{{ explode(' ', $membre->nom_complet)[1] ?? '' }}</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[5px] text-gray-400 font-bold uppercase block">Fonction :</label>
+                    <span class="text-[8px] font-bold text-gray-800 uppercase leading-none">{{ $membre->fonction }} ({{ $membre->lieu_naissance ?? 'KENGE' }})</span>
+                </div>
+
+                <div>
+                    <label class="text-[5px] text-gray-400 font-bold uppercase block">Adresse :</label>
+                    <span class="text-[6.5px] font-semibold text-gray-600 uppercase leading-tight line-clamp-1 italic">
+                        {{ $membre->adresse_membre }}
                     </span>
                 </div>
             </div>
 
-            <div class="flex-1 space-y-1.5">
-                <h4 class="text-blue-800 font-extrabold text-[8px] border-b border-orange-400 pb-0.5 uppercase">
-                    Carte de membre
-                </h4>
-                
-                <div>
-                    <span class="block text-[6px] text-gray-500 font-medium uppercase">Nom Complet :</span>
-                    <span class="font-bold text-[9px] text-gray-900 uppercase">{{ $membre->nom_complet }}</span>
+            <div class="flex justify-between items-end mt-auto pt-1 border-t border-gray-50">
+                <div class="flex flex-col gap-1">
+                    <div class="bg-slate-100 px-1.5 py-0.5 rounded border border-gray-200 inline-block">
+                        <span class="text-[5px] font-bold text-gray-500 uppercase">N° :</span>
+                        <span class="text-[6px] font-black text-blue-900">{{ $membre->numero_membre }}</span>
+                    </div>
+                    <p class="text-[5px] font-bold text-gray-500">VALIDE : <span class="text-red-600">31 DÉC 2026</span></p>
                 </div>
 
-                <div class="grid grid-cols-2 gap-1">
-                    <div>
-                        <span class="block text-[6px] text-gray-500 font-medium uppercase">Fonction :</span>
-                        <span class="font-bold text-[8px] text-gray-900 uppercase leading-none">{{ $membre->fonction }}</span>
+                <div class="flex items-center gap-3">
+                    <div class="p-0.5 bg-white border border-gray-200 rounded shadow-sm flex items-center justify-center">
+                        {!! QrCode::size(32)->margin(0)->generate("ID: $membre->numero_membre | Nom: $membre->nom_complet") !!}
                     </div>
-                    <div>
-                        <span class="block text-[6px] text-gray-500 font-medium uppercase">Origine :</span>
-                        <span class="font-bold text-[8px] text-gray-900 uppercase leading-none">{{ $membre->lieu_naissance ?? 'RD CONGO' }}</span>
-                    </div>
-                </div>
-
-                <div>
-                    <span class="block text-[6px] text-gray-500 font-medium uppercase">Adresse :</span>
-                    <p class="text-[7px] font-semibold text-gray-900 uppercase leading-tight line-clamp-2">
-                        {{ $membre->adresse_membre }}
-                    </p>
-                </div>
-
-                <div class="flex justify-between items-end pt-1">
-                    <div class="space-y-0.5">
-                        <div class="bg-gray-50 border border-gray-200 rounded px-1.5 py-0.5 text-[7px]">
-                            <span class="text-gray-500 uppercase italic">ID:</span> 
-                            <span class="font-bold text-blue-900">{{ $membre->numero_membre }}</span>
-                        </div>
-                        <div class="text-[6px] font-bold text-blue-900 italic uppercase leading-none">
-                            Valide : 31/12/{{ date('Y') }}
-                        </div>
-                    </div>
-                    
-                    <div class="flex gap-2 items-center">
-                        <img src="{{ asset('images/qr_code.png') }}" alt="QR" class="w-8 h-8">
-                        <div class="text-center">
-                            <img src="{{ asset('images/signature.png') }}" alt="Sign" class="h-4">
-                            <span class="block text-[5px] font-bold uppercase">Direction</span>
-                        </div>
+                    <div class="text-center min-w-[40px]">
+                        <img src="{{ asset('images/signature.png') }}" class="h-4 mx-auto mb-0.5">
+                        <p class="text-[4px] font-bold text-gray-400 uppercase leading-none">Direction</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="absolute bottom-[-10px] right-[-10px] opacity-10 pointer-events-none">
-             <img src="{{ asset('images/world_map.png') }}" alt="map" class="w-24">
-        </div>
+        <div class="absolute top-0 right-0 w-6 h-6 bg-orange-500" style="clip-path: polygon(100% 0, 0 0, 100% 100%); opacity: 0.9;"></div>
     </div>
 
+    <script>
+        function downloadCard() {
+            const card = document.getElementById('memberCard');
+            html2canvas(card, {
+                scale: 4, // Très haute résolution
+                useCORS: true,
+                backgroundColor: null,
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Carte_{{ Str::slug($membre->nom_complet) }}.jpg';
+                link.href = canvas.toDataURL('image/jpeg', 1.0);
+                link.click();
+            });
+        }
+    </script>
 </body>
 </html>

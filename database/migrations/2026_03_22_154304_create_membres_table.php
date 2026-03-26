@@ -10,27 +10,39 @@ return new class extends Migration
     {
         Schema::create('membres', function (Blueprint $table) {
             $table->id();
+            
+            // Identifiants
             $table->string('numero_membre')->unique();
             $table->string('nom_complet');
+            
+            // Infos personnelles
             $table->date('date_naissance');
             $table->string('lieu_naissance');
-            $table->string('genre'); // M ou F
+            $table->string('genre'); // Masculin ou Féminin
             $table->string('profession');
+            
+            // Infos ONG
             $table->string('fonction');
             $table->date('date_adhesion');
-            $table->string('qualite');
+            
+            // MODIFICATION : Ajout de nullable() car ce champ peut être vide selon tes tests
+            $table->string('qualite')->nullable(); 
+            
             $table->string('type_membre');
+            
+            // Fichiers
             $table->string('photo_membre')->nullable();
             $table->string('piece_jointe')->nullable();
-            $table->softDeletes();
+            
+            // Localisation : Utilisation de text() pour les adresses longues
             $table->text('adresse_membre');
+            
+            // Options Laravel
+            $table->softDeletes(); // Pour ne pas supprimer définitivement (corbeille)
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('membres');

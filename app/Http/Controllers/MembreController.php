@@ -8,9 +8,7 @@ use Illuminate\Support\Facades\Storage;
 
 class MembreController extends Controller
 {
-    /**
-     * Liste des membres avec statistiques dynamiques et recherche.
-     */
+    
     public function index(Request $request)
     {
         $query = Membre::query();
@@ -85,7 +83,7 @@ class MembreController extends Controller
      */
     public function edit(Membre $membre)
     {
-        return view('membres.edit', compact('membre'));
+        return view('membres.create', compact('membre'));
     }
 
     /**
