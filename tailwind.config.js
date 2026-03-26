@@ -21,17 +21,11 @@ export default {
                 'kzz-black': '#212529',   // Noir Anthracite (Textes dynamiques)
             },
 
-            // 2. CONFIGURATION DE LA TYPOGRAPHIE
             fontFamily: {
-                // Police pour les données et le corps du texte (Roboto / Helvetica)
                 sans: ['Roboto', 'Helvetica', 'Arial', ...defaultTheme.fontFamily.sans],
-                
-                // Police pour les titres et labels (Montserrat / Roboto Bold)
                 title: ['Montserrat', 'Roboto', 'sans-serif'],
             },
         },
     },
-
-    // Plugins additionnels (Forms pour styliser les formulaires par défaut)
     plugins: [forms],
 };

@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\MembreController; // Importez le contrôleur ici
+use App\Http\Controllers\MembreController;
+use App\Http\Controllers\DocumentController; // Importez le contrôleur de documents
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -19,26 +20,28 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
-    // --- Gestion des Membres (Lien avec le Contrôleur) ---
-    
-    // Liste et Statistiques
+    // --- Gestion des Membres ---
     Route::get('/membres', [MembreController::class, 'index'])->name('membres.index');
-    
-    // Formulaire de création
     Route::get('/membres/creer', [MembreController::class, 'create'])->name('membres.create');
-    
-    // Enregistrement des données (Méthode POST)
     Route::post('/membres', [MembreController::class, 'store'])->name('membres.store');
-    
-    // Edition et Mise à jour
     Route::get('/membres/{membre}/edit', [MembreController::class, 'edit'])->name('membres.edit');
     Route::put('/membres/{membre}', [MembreController::class, 'update'])->name('membres.update');
-    
-    // Suppression
     Route::delete('/membres/{membre}', [MembreController::class, 'destroy'])->name('membres.destroy');
-    
-    // Génération de la carte
     Route::get('/membres/{membre}/carte', [MembreController::class, 'generateCard'])->name('membres.generateCard');
+
+    // --- Gestion des Documents (KAZWAZWA) ---
+    // Liste et recherche
+    Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index');
+    
+    // Enregistrement
+    Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store');
+    
+    // Visualisation (Lire)
+    Route::get('/documents/{document}', [DocumentController::class, 'show'])->name('documents.show');
+    
+    // Téléchargement
+    Route::get('/documents/{document}/download', [DocumentController::class, 'download'])->name('documents.download');
+    
 });
 
 require __DIR__.'/auth.php';

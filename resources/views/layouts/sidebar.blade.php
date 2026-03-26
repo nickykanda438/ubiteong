@@ -57,14 +57,13 @@
                         <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 10 6"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/></svg>
                     </button>
                     <ul id="drop-m" class="py-2 space-y-1 bg-blue-900/30 rounded-lg mt-1">
-                        <li><a href="#" class="block p-2 pl-11 text-xs text-blue-100 hover:text-white hover:bg-white/5 transition font-sans italic">Liste des membres</a></li>
-                        <li><a href="#" class="block p-2 pl-11 text-xs text-blue-100 hover:text-white hover:bg-white/5 transition font-sans italic">Enregistrement</a></li>
-                        <li><a href="#" class="block p-2 pl-11 text-xs text-blue-100 hover:text-white hover:bg-white/5 transition font-sans italic">Statistiques</a></li>
+                        <li><a href="{{route('membres.index')}}" class="block p-2 pl-11 text-xs text-blue-100 hover:text-white hover:bg-white/5 transition font-sans italic">Liste des membres</a></li>
+                        <li><a href="{{route('membres.create')}}" class="block p-2 pl-11 text-xs text-blue-100 hover:text-white hover:bg-white/5 transition font-sans italic">Enregistrement</a></li>
                     </ul>
                 </li>
 
                 <li>
-                    <a href="#" class="flex items-center p-2 text-white rounded-lg hover:bg-white/10 group">
+                    <a href="{{route('documents.index')}}" class="flex items-center p-2 text-white rounded-lg hover:bg-white/10 group">
                         <svg class="w-5 h-5 text-gray-300 group-hover:text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414L12.586 2H9z"></path></svg>
                         <span class="ms-3 font-sans">Documentation</span>
                     </a>
