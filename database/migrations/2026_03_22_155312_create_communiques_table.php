@@ -15,7 +15,16 @@ return new class extends Migration
             $table->id();
             $table->string('reference')->unique();
             $table->string('titre');
-            $table->text('contenu');
+            
+            // On ajoute un type pour savoir si c'est une saisie ou un fichier
+            $table->enum('type', ['saisie', 'pdf'])->default('saisie');
+            
+            // Le contenu devient nullable (facultatif si c'est un PDF)
+            $table->text('contenu')->nullable();
+            
+            // Nouveau champ pour stocker le chemin du fichier PDF
+            $table->string('chemin_pdf')->nullable();
+            
             $table->string('signataire')->nullable();
             $table->date('date_publication');
             $table->boolean('est_actif')->default(true);
