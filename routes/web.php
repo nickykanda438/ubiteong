@@ -3,14 +3,9 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MembreController;
 use App\Http\Controllers\DocumentController; 
-use App\Http\Controllers\CadreController; // Import indispensable pour les cadres
+use App\Http\Controllers\CadreController;
+use App\Http\Controllers\CommunicationController; 
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes - ONG KAZWAZWA
-|--------------------------------------------------------------------------
-*/
 
 Route::get('/', function () {
     return view('welcome');
@@ -48,13 +43,26 @@ Route::middleware('auth')->group(function () {
         Route::get('/{document}/download', [DocumentController::class, 'download'])->name('download');
     });
 
-    // --- GESTION DES CADRES (Haut Placé) ---
+    // --- GESTION DES CADRES ---
     Route::prefix('cadres')->name('cadres.')->group(function () {
         Route::get('/', [CadreController::class, 'index'])->name('index');
         Route::post('/', [CadreController::class, 'store'])->name('store');
         Route::get('/{cadre}', [CadreController::class, 'show'])->name('show');
         Route::put('/{cadre}', [CadreController::class, 'update'])->name('update');
         Route::delete('/{cadre}', [CadreController::class, 'destroy'])->name('destroy');
+    });
+
+    // --- MODULE COMMUNICATION (Communiqués & Events) ---
+    Route::prefix('communication')->group(function () {
+        // Vue principale (Formulaires + Liste)
+        Route::get('/', [CommunicationController::class, 'index'])->name('communication.index');
+        
+        // Actions de stockage
+        Route::post('/communique', [CommunicationController::class, 'storeCommunique'])->name('communique.store');
+        Route::post('/event', [CommunicationController::class, 'storeEvent'])->name('event.store');
+        
+        // Suppression (Dynamique via le contrôleur unique)
+        Route::delete('/{model}/{id}', [CommunicationController::class, 'destroy'])->name('communication.destroy');
     });
     
 });
