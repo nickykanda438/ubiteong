@@ -5,12 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Cadre;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class CadreController extends Controller
 {
     /**
-     * Affichage de la liste des cadres dans un tableau
+     * Liste des cadres avec recherche et pagination.
      */
     public function index(Request $request)
     {
@@ -28,7 +27,7 @@ class CadreController extends Controller
     }
 
     /**
-     * Enregistrement d'un nouveau cadre
+     * Enregistre un nouveau cadre dirigeant.
      */
     public function store(Request $request)
     {
@@ -37,12 +36,12 @@ class CadreController extends Controller
             'fonction'    => 'required|string|max:255',
             'profession'  => 'required|string|max:255',
             'biographie'  => 'nullable|string',
-            'photo'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // 2Mo Max
+            'photo'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Limite à 2Mo
         ]);
 
         $path = null;
         if ($request->hasFile('photo')) {
-            // Stockage de la photo dans le dossier public/cadres
+            // Stockage dans storage/app/public/cadres
             $path = $request->file('photo')->store('cadres', 'public');
         }
 
@@ -54,20 +53,21 @@ class CadreController extends Controller
             'photo'       => $path,
         ]);
 
-        return redirect()->route('cadres.index')->with('success', 'Le cadre a été ajouté avec succès.');
+        return redirect()->route('cadres.index')
+            ->with('success', 'Le cadre a été ajouté avec succès au Haut Commandement.');
     }
 
     /**
-     * Afficher la biographie d'un cadre (pour une fenêtre modale ou une page dédiée)
+     * Affiche la page de biographie détaillée (Fiche complète).
      */
     public function show(Cadre $cadre)
     {
-        // Retourne les données en JSON pour une utilisation facile avec un Modal Flowbite
-        return response()->json($cadre);
+        // Renvoie vers le fichier resources/views/cadres/biographie.blade.php
+        return view('cadres.biographie', compact('cadre'));
     }
 
     /**
-     * Mise à jour des informations d'un cadre
+     * Met à jour les informations d'un cadre et gère le remplacement de la photo.
      */
     public function update(Request $request, Cadre $cadre)
     {
@@ -82,30 +82,33 @@ class CadreController extends Controller
         $data = $request->only(['nom_complet', 'fonction', 'profession', 'biographie']);
 
         if ($request->hasFile('photo')) {
-            // Supprimer l'ancienne photo si elle existe
+            // Nettoyage : Supprimer l'ancienne photo du disque si elle existe
             if ($cadre->photo) {
                 Storage::disk('public')->delete($cadre->photo);
             }
+            // Enregistrement de la nouvelle photo
             $data['photo'] = $request->file('photo')->store('cadres', 'public');
         }
 
         $cadre->update($data);
 
-        return redirect()->route('cadres.index')->with('success', 'Informations du cadre mises à jour.');
+        return redirect()->route('cadres.index')
+            ->with('success', 'Les informations du dirigeant ont été mises à jour.');
     }
 
     /**
-     * Suppression d'un cadre
+     * Supprime un cadre et son fichier image associé.
      */
     public function destroy(Cadre $cadre)
     {
-        // Supprimer la photo physiquement avant de supprimer l'entrée en base
+        // Suppression physique du fichier image pour éviter les fichiers orphelins
         if ($cadre->photo) {
             Storage::disk('public')->delete($cadre->photo);
         }
 
         $cadre->delete();
 
-        return redirect()->route('cadres.index')->with('success', 'Le cadre a été supprimé de la liste.');
+        return redirect()->route('cadres.index')
+            ->with('success', 'Le cadre a été retiré de la base de données.');
     }
 }

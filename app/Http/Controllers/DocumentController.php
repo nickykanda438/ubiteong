@@ -30,7 +30,7 @@ class DocumentController extends Controller
     }
 
     /**
-     * Enregistrement d'un nouveau document
+     * Enregistrement d'un nouveau document (Supporte PDF, Word, Excel, PowerPoint, Images)
      */
     public function store(Request $request)
     {
@@ -39,7 +39,8 @@ class DocumentController extends Controller
             'type_doc'    => 'required|string',
             'titre'       => 'required|string|max:255',
             'description' => 'nullable|string',
-            'file'        => 'required|file|mimes:pdf,doc,docx,jpg,png|max:5120',
+            // Ajout des mimes pour Excel (xls, xlsx) et PowerPoint (ppt, pptx)
+            'file'        => 'required|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png|max:10240',
         ]);
 
         if ($request->hasFile('file')) {
@@ -67,32 +68,29 @@ class DocumentController extends Controller
     }
 
     /**
-     * Visualiser le document dans le navigateur
+     * Visualiser le document (Lecture seule si supporté par le navigateur)
      */
     public function show(Document $document)
-{
-    /** @var \Illuminate\Filesystem\FilesystemAdapter $storage */
-    $storage = Storage::disk('public');
+    {
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $storage */
+        $storage = Storage::disk('public');
 
-    // 1. Vérification de l'existence du fichier
-    if (!$storage->exists($document->file_path)) {
-        abort(404, 'Fichier physique introuvable sur le serveur.');
+        if (!$storage->exists($document->file_path)) {
+            abort(404, 'Fichier physique introuvable sur le serveur.');
+        }
+
+        $path = $storage->path($document->file_path);
+        $mimeType = $storage->mimeType($document->file_path);
+
+        // Header "inline" pour tenter l'ouverture dans le navigateur
+        return response()->file($path, [
+            'Content-Type' => $mimeType,
+            'Content-Disposition' => 'inline; filename="' . $document->titre . '"'
+        ]);
     }
 
-    // 2. Récupération des informations nécessaires
-    $path = $storage->path($document->file_path);
-    $mimeType = $storage->mimeType($document->file_path);
-
-    // 3. Retour de la réponse avec l'entête "inline"
-    // C'est cet entête qui empêche le téléchargement forcé
-    return response()->file($path, [
-        'Content-Type' => $mimeType,
-        'Content-Disposition' => 'inline; filename="' . $document->titre . '"'
-    ]);
-}
-
     /**
-     * Télécharger le document
+     * Télécharger le document (Action forcée)
      */
     public function download(Document $document)
     {
@@ -100,7 +98,9 @@ class DocumentController extends Controller
         $storage = Storage::disk('public');
 
         if ($storage->exists($document->file_path)) {
-            $downloadName = Str::slug($document->titre) . '.' . strtolower($document->format);
+            // On récupère l'extension réelle du fichier stocké
+            $extension = pathinfo($document->file_path, PATHINFO_EXTENSION);
+            $downloadName = Str::slug($document->titre) . '.' . $extension;
             
             return $storage->download($document->file_path, $downloadName);
         }
