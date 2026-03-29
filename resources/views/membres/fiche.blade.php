@@ -128,7 +128,7 @@
     @media print {
         .no-print, nav, button, a { display: none !important; }
         .bg-gray-50 { background-color: white !important; }
-        .shadow-xl { shadow: none !important; border: 1px solid #eee; }
+        .shadow-xl { box-shadow: none !important; border: 1px solid #eee; }
     }
 </style>
 @endsection

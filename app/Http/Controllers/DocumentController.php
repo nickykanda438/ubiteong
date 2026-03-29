@@ -70,16 +70,26 @@ class DocumentController extends Controller
      * Visualiser le document dans le navigateur
      */
     public function show(Document $document)
-    {
-        /** @var \Illuminate\Filesystem\FilesystemAdapter $storage */
-        $storage = Storage::disk('public');
+{
+    /** @var \Illuminate\Filesystem\FilesystemAdapter $storage */
+    $storage = Storage::disk('public');
 
-        if (!$storage->exists($document->file_path)) {
-            abort(404, 'Fichier introuvable sur le serveur.');
-        }
-
-        return response()->file($storage->path($document->file_path));
+    // 1. Vérification de l'existence du fichier
+    if (!$storage->exists($document->file_path)) {
+        abort(404, 'Fichier physique introuvable sur le serveur.');
     }
+
+    // 2. Récupération des informations nécessaires
+    $path = $storage->path($document->file_path);
+    $mimeType = $storage->mimeType($document->file_path);
+
+    // 3. Retour de la réponse avec l'entête "inline"
+    // C'est cet entête qui empêche le téléchargement forcé
+    return response()->file($path, [
+        'Content-Type' => $mimeType,
+        'Content-Disposition' => 'inline; filename="' . $document->titre . '"'
+    ]);
+}
 
     /**
      * Télécharger le document
