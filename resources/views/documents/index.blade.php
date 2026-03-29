@@ -3,16 +3,21 @@
 @section('title', 'Gestion des Documents KAZWAZWA')
 
 @section('content')
-<section class="bg-kzz-gray p-3 sm:p-5 min-h-screen">
-    <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
+<section class="bg-kzz-gray min-h-screen font-sans">
+    <div class="relative h-64 w-full flex flex-col items-center justify-center text-center px-4 overflow-hidden bg-slate-900 shadow-inner">
+        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80" 
+             class="absolute inset-0 w-full h-full object-cover brightness-[0.3] scale-105" alt="Background Documentation">
         
-        <div class="mb-6 p-4 bg-white rounded-lg shadow-sm border-l-4 border-kzz-blue">
-            <h1 class="text-xl font-bold text-kzz-black mb-2">Centre de Documentation</h1>
-            <p class="text-gray-600 text-sm italic">
-                Retrouvez ici tous les documents officiels, rapports et ressources de l'ONG. Ces documents sont essentiels pour la transparence et le suivi de nos projets.
+        <div class="relative z-10">
+            <h1 class="text-3xl md:text-5xl font-bold text-white mb-2 font-title tracking-tight uppercase">Centre de Documentation</h1>
+            <p class="text-white/80 text-lg font-light italic max-w-2xl">
+                Retrouvez ici tous les documents officiels, rapports et ressources de l'ONG.
             </p>
         </div>
+    </div>
 
+    <div class="mx-auto max-w-screen-xl px-4 lg:px-12 -mt-10 relative z-20 pb-20">
+        
         <div class="bg-white relative shadow-md sm:rounded-lg overflow-hidden border border-gray-100 mb-6">
             <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
                 <div class="w-full md:w-1/2">
@@ -43,7 +48,7 @@
                             <th scope="col" class="px-4 py-3">N° Doc</th>
                             <th scope="col" class="px-4 py-3">Titre</th>
                             <th scope="col" class="px-4 py-3">Type</th>
-                            <th scope="col" class="px-4 py-3">Format</th>
+                            <th scope="col" class="px-4 py-3 text-center">Format</th>
                             <th scope="col" class="px-4 py-3">Date Insertion</th>
                             <th scope="col" class="px-4 py-3 text-right">Actions</th>
                         </tr>
@@ -54,18 +59,18 @@
                             <td class="px-4 py-3 font-semibold text-kzz-black">{{ $doc->numero_doc }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex flex-col">
-                                    <span class="text-kzz-black font-medium">{{ $doc->titre }}</span>
-                                    <span class="text-xs text-gray-400 italic">{{ Str::limit($doc->description, 50) }}</span>
+                                    <span class="text-kzz-black font-medium text-base">{{ $doc->titre }}</span>
+                                    <span class="text-xs text-gray-400 italic font-light">{{ Str::limit($doc->description, 50) }}</span>
                                 </div>
                             </td>
                             <td class="px-4 py-3">{{ $doc->type_doc }}</td>
-                            <td class="px-4 py-3">
-                                <span class="px-2 py-1 rounded text-xs font-bold bg-blue-100 text-kzz-blue uppercase">
+                            <td class="px-4 py-3 text-center">
+                                <span class="px-2 py-1 rounded text-[10px] font-bold bg-blue-100 text-kzz-blue uppercase border border-blue-200">
                                     {{ $doc->format }}
                                 </span>
                             </td>
                             <td class="px-4 py-3">{{ \Carbon\Carbon::parse($doc->date_insertion)->format('d/m/Y') }}</td>
-                            <td class="px-4 py-3 flex items-center justify-end space-x-3">
+                            <td class="px-4 py-3 flex items-center justify-end space-x-3 mt-2">
                                 <a href="{{ route('documents.show', $doc) }}" target="_blank" title="Lire le document" class="text-gray-500 hover:text-kzz-green">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                 </a>
@@ -76,8 +81,8 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-10 text-center text-gray-400 italic">
-                                Aucun document trouvé.
+                            <td colspan="6" class="px-4 py-16 text-center text-gray-400 italic font-light">
+                                Aucun document trouvé dans la base.
                             </td>
                         </tr>
                         @endforelse
@@ -97,7 +102,7 @@
         <form action="{{ route('documents.store') }}" method="POST" enctype="multipart/form-data" class="relative bg-white rounded-lg shadow dark:bg-gray-800">
             @csrf
             <div class="flex items-start justify-between p-4 border-b rounded-t bg-kzz-blue">
-                <h3 class="text-xl font-semibold text-white">Enregistrer un Document</h3>
+                <h3 class="text-xl font-semibold text-white uppercase tracking-tight">Enregistrer un Document</h3>
                 <button type="button" class="text-white bg-transparent hover:bg-blue-800 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center" data-modal-hide="add-document-modal">
                     <svg class="w-3 h-3" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
                 </button>
@@ -105,11 +110,11 @@
             <div class="p-6 space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="col-span-1">
-                        <label class="block mb-2 text-sm font-medium text-kzz-black">Numéro Document</label>
+                        <label class="block mb-2 text-sm font-medium text-kzz-black uppercase tracking-wide text-xs">Numéro Document</label>
                         <input type="text" name="numero_doc" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-kzz-blue focus:border-kzz-blue block w-full p-2.5" required placeholder="Ex: KZZ-2024-001">
                     </div>
                     <div class="col-span-1">
-                        <label class="block mb-2 text-sm font-medium text-kzz-black">Type</label>
+                        <label class="block mb-2 text-sm font-medium text-kzz-black uppercase tracking-wide text-xs">Type</label>
                         <select name="type_doc" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-kzz-blue focus:border-kzz-blue block w-full p-2.5">
                             <option value="Rapport">Rapport</option>
                             <option value="Statuts">Statuts / Règlement</option>
@@ -119,20 +124,20 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block mb-2 text-sm font-medium text-kzz-black">Titre</label>
+                    <label class="block mb-2 text-sm font-medium text-kzz-black uppercase tracking-wide text-xs">Titre</label>
                     <input type="text" name="titre" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-kzz-blue focus:border-kzz-blue block w-full p-2.5" required>
                 </div>
                 <div>
-                    <label class="block mb-2 text-sm font-medium text-kzz-black">Description</label>
+                    <label class="block mb-2 text-sm font-medium text-kzz-black uppercase tracking-wide text-xs">Description</label>
                     <textarea name="description" rows="3" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-kzz-blue focus:border-kzz-blue block w-full p-2.5" placeholder="Résumé du document..."></textarea>
                 </div>
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-kzz-black">Fichier (Max 5Mo)</label>
+                <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                    <label class="block mb-2 text-sm font-medium text-kzz-blue uppercase tracking-wide text-xs">Fichier (Max 5Mo)</label>
                     <input type="file" name="file" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 p-1" required>
                 </div>
             </div>
             <div class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b">
-                <button type="submit" class="text-white bg-kzz-green hover:bg-green-700 font-medium rounded-lg text-sm px-5 py-2.5">Enregistrer le document</button>
+                <button type="submit" class="text-white bg-kzz-green hover:bg-green-700 font-bold rounded-lg text-sm px-5 py-2.5 shadow-md">Enregistrer le document</button>
                 <button data-modal-hide="add-document-modal" type="button" class="text-gray-500 bg-white hover:bg-gray-100 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5">Annuler</button>
             </div>
         </form>

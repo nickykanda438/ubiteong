@@ -14,12 +14,14 @@ class CommunicationController extends Controller
      * Affiche la liste des communiqués et des événements (Page Blog/Presse)
      */
     public function index()
-    {
-        $communiques = Communique::where('est_actif', true)->orderBy('date_publication', 'desc')->get();
-        $events = Event::orderBy('date_evenement', 'desc')->get();
+   {
+    // On remplace ->get() par ->paginate(5) pour permettre l'affichage par pages
+    $communiques = Communique::where('est_actif', true)->orderBy('date_publication', 'desc')->paginate(5);
+    
+    $events = Event::orderBy('date_evenement', 'desc')->get();
 
-        return view('communication.index', compact('communiques', 'events'));
-    }
+    return view('communication.index', compact('communiques', 'events'));
+}
 
     /**
      * Enregistre un nouveau communiqué (Saisie directe ou PDF)
