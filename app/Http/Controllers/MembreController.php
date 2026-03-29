@@ -23,11 +23,14 @@ class MembreController extends Controller
 
         // Calcul des statistiques basées sur vos catégories exactes
         $stats = [
-            'total'         => Membre::count(),
-            'effectifs'     => Membre::where('type_membre', 'Membre effectif')->count(),
-            'sympathisants' => Membre::where('type_membre', 'Membre sympathisant')->count(),
-            'honneurs'      => Membre::where('type_membre', 'Membre d’honneur')->count(),
-        ];
+          'total' => Membre::count(),
+          'effectifs' => Membre::where('type_membre', 'Membre effectif')->count(),
+          'sympathisants' => Membre::where('type_membre', 'Membre sympathisant')->count(),
+          'honneurs' => Membre::where('type_membre', 'Membre d’honneur')->count(),
+         // AJOUTEZ CES DEUX LIGNES :
+          'hommes' => Membre::where('genre', 'Masculin')->count(), 
+          'femmes' => Membre::where('genre', 'Féminin')->count(),  
+         ];
 
         return view('membres.index', compact('membres', 'stats'));
     }
@@ -40,9 +43,7 @@ class MembreController extends Controller
         return view('membres.create');
     }
 
-    /**
-     * Enregistrement avec gestion de fichier.
-     */
+    
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -69,13 +70,16 @@ class MembreController extends Controller
 
         return redirect()->route('membres.index')->with('success', 'Membre enregistré avec succès.');
     }
-
     /**
      * Visualisation (Profil ou Carte).
      */
     public function show(Membre $membre)
     {
         return view('membres.show', compact('membre'));
+    }
+
+    public function fiche(Membre $membre){
+        return view('membres.fiche', compact('membre'));
     }
 
     /**

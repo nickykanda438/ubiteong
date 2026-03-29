@@ -25,15 +25,20 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
     // --- GESTION DES MEMBRES ---
-    Route::prefix('membres')->name('membres.')->group(function () {
-        Route::get('/', [MembreController::class, 'index'])->name('index');
-        Route::get('/creer', [MembreController::class, 'create'])->name('create');
-        Route::post('/', [MembreController::class, 'store'])->name('store');
-        Route::get('/{membre}/edit', [MembreController::class, 'edit'])->name('edit');
-        Route::put('/{membre}', [MembreController::class, 'update'])->name('update');
-        Route::delete('/{membre}', [MembreController::class, 'destroy'])->name('destroy');
-        Route::get('/{membre}/carte', [MembreController::class, 'generateCard'])->name('generateCard');
-    });
+   // --- GESTION DES MEMBRES ---
+Route::prefix('membres')->name('membres.')->group(function () {
+    Route::get('/', [MembreController::class, 'index'])->name('index');
+    Route::get('/creer', [MembreController::class, 'create'])->name('create');
+    Route::post('/', [MembreController::class, 'store'])->name('store');
+    
+    // AJOUTEZ CETTE LIGNE PRECISEMENT ICI :
+    Route::get('/{membre}/fiche', [MembreController::class, 'fiche'])->name('fiche'); 
+    
+    Route::get('/{membre}/edit', [MembreController::class, 'edit'])->name('edit');
+    Route::put('/{membre}', [MembreController::class, 'update'])->name('update');
+    Route::delete('/{membre}', [MembreController::class, 'destroy'])->name('destroy');
+    Route::get('/{membre}/carte', [MembreController::class, 'generateCard'])->name('generateCard');
+});
 
     // --- GESTION DES DOCUMENTS ---
     Route::prefix('documents')->name('documents.')->group(function () {
