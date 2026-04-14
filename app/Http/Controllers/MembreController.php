@@ -52,18 +52,26 @@ class MembreController extends Controller
             'date_naissance' => 'required|date',
             'lieu_naissance' => 'nullable|string',
             'genre'          => 'required',
+            'etat_civil'     => 'nullable|string',
+            'anciennete'     => 'nullable|string',
             'profession'     => 'nullable|string',
             'fonction'       => 'required',
             'date_adhesion'  => 'nullable|date',
             'qualite'        => 'nullable|string',
             'type_membre'    => 'required', // Membre effectif, sympathisant, d’honneur
             'photo_membre'   => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'piece_identite' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:5120',
             'adresse_membre' => 'required',
         ]);
 
         if ($request->hasFile('photo_membre')) {
             $path = $request->file('photo_membre')->store('membres/photos', 'public');
             $validated['photo_membre'] = $path;
+        }
+
+        if ($request->hasFile('piece_identite')) {
+            $path = $request->file('piece_identite')->store('membres/documents', 'public');
+            $validated['piece_identite'] = $path;
         }
 
         Membre::create($validated);
@@ -98,7 +106,17 @@ class MembreController extends Controller
         $validated = $request->validate([
             'numero_membre'  => 'required|unique:membres,numero_membre,' . $membre->id,
             'nom_complet'    => 'required|string|max:255',
+            'date_naissance' => 'required|date',
+            'lieu_naissance' => 'nullable|string',
+            'genre'          => 'required',
+            'etat_civil'     => 'nullable|string',
+            'anciennete'     => 'nullable|string',
+            'profession'     => 'nullable|string',
+            'fonction'       => 'required',
+            'date_adhesion'  => 'nullable|date',
+            'qualite'        => 'nullable|string',
             'photo_membre'   => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'piece_identite' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:5120',
             'type_membre'    => 'required',
             'adresse_membre' => 'required',
         ]);
@@ -109,6 +127,14 @@ class MembreController extends Controller
             }
             $path = $request->file('photo_membre')->store('membres/photos', 'public');
             $validated['photo_membre'] = $path;
+        }
+
+        if ($request->hasFile('piece_identite')) {
+            if ($membre->piece_identite) {
+                Storage::disk('public')->delete($membre->piece_identite);
+            }
+            $path = $request->file('piece_identite')->store('membres/documents', 'public');
+            $validated['piece_identite'] = $path;
         }
 
         $membre->update($validated);
@@ -131,5 +157,17 @@ class MembreController extends Controller
     public function generateCard(Membre $membre)
     {
         return view('membres.card-print', compact('membre'));
+    }
+
+    /**
+     * Afficher la pièce d'identité du membre.
+     */
+    public function viewPieceIdentite(Membre $membre)
+    {
+        if (!$membre->piece_identite || !Storage::disk('public')->exists($membre->piece_identite)) {
+            return redirect()->back()->with('error', 'Pièce d\'identité non trouvée.');
+        }
+
+        return Storage::disk('public')->response($membre->piece_identite);
     }
 }

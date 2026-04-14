@@ -17,6 +17,8 @@ class Membre extends Model
         'date_naissance',
         'lieu_naissance',
         'genre',
+        'etat_civil',
+        'anciennete',
         'profession',
         'fonction',
         'date_adhesion',
@@ -24,6 +26,7 @@ class Membre extends Model
         'type_membre',
         'photo_membre',
         'piece_jointe',
+        'piece_identite',
         'adresse_membre'
     ];
 

@@ -38,6 +38,7 @@ Route::prefix('membres')->name('membres.')->group(function () {
     Route::put('/{membre}', [MembreController::class, 'update'])->name('update');
     Route::delete('/{membre}', [MembreController::class, 'destroy'])->name('destroy');
     Route::get('/{membre}/carte', [MembreController::class, 'generateCard'])->name('generateCard');
+    Route::get('/{membre}/piece-identite', [MembreController::class, 'viewPieceIdentite'])->name('viewPieceIdentite');
 });
 
     // --- GESTION DES DOCUMENTS ---
