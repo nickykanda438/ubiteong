@@ -3,12 +3,58 @@
 namespace App\Http\Controllers;
 
 use App\Models\Credit;
+use App\Models\Epargne;
+use App\Models\Membre;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class CreditController extends Controller
 {
+    /**
+     * Dashboard Finance : Affiche les statistiques globales et les activités récentes
+     */
+    public function index()
+    {
+        // 1. Statistiques des Crédits
+        $statsCredits = [
+            'total_octroye' => Credit::sum('montant_principal'),
+            'total_restant' => Credit::where('statut', 'en_cours')->sum('reste_a_payer'),
+            'nb_en_retard'  => Credit::enRetard()->count(),
+        ];
+
+        // 2. Statistiques et Données des Épargnes (Dépôts)
+        try {
+            $totalEpargne = Epargne::sum('solde'); 
+            $deposits = Epargne::with('membre')->latest()->take(5)->get();
+        } catch (\Exception $e) {
+            $totalEpargne = 0;
+            $deposits = collect();
+        }
+
+        // 3. Activités récentes pour le tableau des crédits
+        $creditsRecents = Credit::with('membre')
+            ->latest()
+            ->take(10)
+            ->get();
+
+        // 4. Liste des membres triée par 'nom_complet'
+        $membres = Membre::orderBy('nom_complet')->get();
+
+        return view('finance.index', compact('statsCredits', 'totalEpargne', 'creditsRecents', 'membres', 'deposits'));
+    }
+
+    /**
+     * Affiche le formulaire de création de crédit (Fichier credit.blade.php)
+     */
+    public function create()
+    {
+        $membres = Membre::orderBy('nom_complet')->get();
+        
+        // On cible directement le fichier credit.blade.php dans le dossier finance
+        return view('finance.credit', compact('membres'));
+    }
+
     /**
      * Enregistrer un nouveau crédit
      */
@@ -18,7 +64,6 @@ class CreditController extends Controller
             'membre_id'         => 'required|exists:membres,id',
             'montant_principal' => 'required|numeric|min:1',
             'date_deblocage'    => 'required|date',
-            // Règle : La date d'échéance ne doit pas dépasser 6 mois après le déblocage
             'date_echeance_finale' => [
                 'required',
                 'date',
@@ -26,7 +71,7 @@ class CreditController extends Controller
                 function ($attribute, $value, $fail) use ($request) {
                     $deblocage = Carbon::parse($request->date_deblocage);
                     $echeance = Carbon::parse($value);
-                    if ($deblocage->diffInMonths($echeance) > 6) {
+                    if ($deblocage && $deblocage->diffInMonths($echeance) > 6) {
                         $fail("Le crédit ne peut pas dépasser une durée de 6 mois.");
                     }
                 },
@@ -36,13 +81,13 @@ class CreditController extends Controller
         Credit::create([
             'membre_id'            => $request->membre_id,
             'montant_principal'    => $request->montant_principal,
-            'reste_a_payer'        => $request->montant_principal, // Initialement égal au principal
+            'reste_a_payer'        => $request->montant_principal,
             'date_deblocage'       => $request->date_deblocage,
             'date_echeance_finale' => $request->date_echeance_finale,
             'statut'               => 'en_cours',
         ]);
 
-        return redirect()->back()->with('success', 'Crédit accordé avec succès.');
+        return redirect()->route('finance.index')->with('success', 'Crédit accordé avec succès.');
     }
 
     /**
@@ -56,12 +101,9 @@ class CreditController extends Controller
 
         $credit = Credit::findOrFail($id);
 
-        // On utilise une transaction pour garantir la cohérence des données
         DB::transaction(function () use ($credit, $request) {
-            // Mise à jour du reste à payer
             $credit->reste_a_payer -= $request->montant_rembourse;
 
-            // Si le solde est atteint ou dépassé, on marque comme soldé
             if ($credit->reste_a_payer <= 0) {
                 $credit->reste_a_payer = 0;
                 $credit->statut = 'solde';
@@ -74,26 +116,22 @@ class CreditController extends Controller
     }
 
     /**
-     * Afficher les détails d'un crédit (avec le calcul des intérêts)
+     * Afficher les détails d'un crédit
      */
     public function show($id)
     {
         $credit = Credit::with('membre')->findOrFail($id);
-        
-        // On récupère le montant total dû (calculé par l'Accesseur du modèle)
         $montantTotalDu = $credit->montant_total_du; 
         
         return view('finance.credits.show', compact('credit', 'montantTotalDu'));
     }
 
     /**
-     * Liste des crédits en retard (Taux doublé)
+     * Liste des crédits en retard
      */
     public function enRetard()
     {
-        // Utilisation du scope défini dans le modèle
         $creditsEnRetard = Credit::enRetard()->with('membre')->get();
-        
         return view('finance.credits.retard', compact('creditsEnRetard'));
     }
 }
