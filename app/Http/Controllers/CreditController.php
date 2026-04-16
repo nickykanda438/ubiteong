@@ -32,7 +32,7 @@ class CreditController extends Controller
             $deposits = collect();
         }
 
-        // 3. Activités récentes pour le tableau des crédits
+        // 3. Activités récentes
         $creditsRecents = Credit::with('membre')
             ->latest()
             ->take(10)
@@ -45,14 +45,20 @@ class CreditController extends Controller
     }
 
     /**
-     * Affiche le formulaire de création de crédit (Fichier credit.blade.php)
+     * Affiche la vue des crédits (Tableau + Formulaire Modal)
      */
     public function create()
     {
+        // On récupère les membres pour le select du formulaire
         $membres = Membre::orderBy('nom_complet')->get();
         
-        // On cible directement le fichier credit.blade.php dans le dossier finance
-        return view('finance.credit', compact('membres'));
+        // CORRECTION : On récupère la liste des crédits pour alimenter le tableau de la vue
+        $credits = Credit::with('membre')
+            ->latest()
+            ->get();
+        
+        // On passe 'membres' ET 'credits' à la vue finance.credit
+        return view('finance.credit', compact('membres', 'credits'));
     }
 
     /**
@@ -87,7 +93,8 @@ class CreditController extends Controller
             'statut'               => 'en_cours',
         ]);
 
-        return redirect()->route('finance.index')->with('success', 'Crédit accordé avec succès.');
+        // Redirection vers la page de création/liste des crédits avec succès
+        return redirect()->route('finance.credits.create')->with('success', 'Crédit accordé avec succès.');
     }
 
     /**
@@ -121,7 +128,9 @@ class CreditController extends Controller
     public function show($id)
     {
         $credit = Credit::with('membre')->findOrFail($id);
-        $montantTotalDu = $credit->montant_total_du; 
+        
+        // Note: Assurez-vous que l'attribut montant_total_du existe dans votre modèle Credit
+        $montantTotalDu = $credit->montant_total_du ?? ($credit->montant_principal * 1.2); 
         
         return view('finance.credits.show', compact('credit', 'montantTotalDu'));
     }
