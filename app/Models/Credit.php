@@ -25,45 +25,30 @@ class Credit extends Model
         'reste_a_payer' => 'decimal:2',
     ];
 
-    /**
-     * Relation avec le membre
-     */
     public function membre(): BelongsTo
     {
         return $this->belongsTo(Membre::class);
     }
 
     /**
-     * Accesseur pour calculer dynamiquement le montant total dû avec intérêts
-     * Utilisation : $credit->montant_total_du
+     * Accesseur : Calcul dynamique de la dette totale (Principal + Intérêts selon temps)
      */
     public function getMontantTotalDuAttribute()
     {
         $maintenant = now();
-        
-        // Calcul du nombre de mois entiers écoulés depuis le début
-        // On utilise max(1, ...) pour compter au moins le premier mois
         $moisEcoules = max(1, $this->date_deblocage->diffInMonths($maintenant));
 
-        // Règle : Si on dépasse l'échéance (6 mois), le taux est doublé
-        // Taux normal : 20% (0.20) | Taux retard : 40% (0.40)
+        // Taux normal 20% | Retard 40%
         $tauxMensuel = $maintenant->gt($this->date_echeance_finale) ? 0.40 : 0.20;
 
-        // Formule : Principal + (Principal * Taux * Mois)
         return $this->montant_principal * (1 + ($tauxMensuel * $moisEcoules));
     }
 
-    /**
-     * Vérifier si le crédit est actuellement en situation de dépassement
-     */
     public function estEnDepassement(): bool
     {
         return now()->gt($this->date_echeance_finale) && $this->statut !== 'solde';
     }
 
-    /**
-     * Scope pour filtrer les crédits qui ont dépassé les 6 mois
-     */
     public function scopeEnRetard($query)
     {
         return $query->where('date_echeance_finale', '<', now())

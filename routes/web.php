@@ -67,11 +67,11 @@ Route::middleware('auth')->group(function () {
     // --- MODULE FINANCE ---
     Route::prefix('finance')->name('finance.')->group(function () {
         
-        // Page principale (Dashboard)
+        // Page principale
         Route::get('/', [CreditController::class, 'index'])->name('index');
 
-        // AJOUT : Route pour afficher le formulaire (credit.blade.php)
-        Route::get('/credit', [CreditController::class, 'create'])->name('credit');
+        // CORRECTION ICI : Changement de 'create' vers 'index'
+        Route::get('/credit', [CreditController::class, 'index'])->name('credit');
 
         // --- GESTION DES CRÉDITS (Actions) ---
         Route::prefix('credits')->name('credits.')->group(function () {
