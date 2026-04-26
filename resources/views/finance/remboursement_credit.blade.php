@@ -22,7 +22,8 @@
                 </button>
             </div>
 
-            <form action="{{ route('finance.repayments.store') }}" method="POST">
+            <form action="<form action="{{ route('finance.credits.rembourser', ['id' => $credit->id]) }}"
+                method="POST">" method="POST">
                 @csrf
                 <input type="hidden" name="credit_id" id="repay_credit_id">
 

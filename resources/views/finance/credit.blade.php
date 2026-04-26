@@ -32,14 +32,27 @@
                 </ol>
             </nav>
 
-            <button data-modal-target="credit-modal" data-modal-toggle="credit-modal"
-                class="flex items-center justify-center text-white bg-kzz-blue hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-bold rounded-lg text-sm px-5 py-2.5 transition transform hover:scale-105">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
-                    </path>
-                </svg>
-                Octroyer un Crédit
-            </button>
+            <div class="flex gap-2">
+                <button data-modal-target="credit-modal" data-modal-toggle="credit-modal"
+                    class="flex items-center justify-center text-white bg-kzz-blue hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-bold rounded-lg text-sm px-5 py-2.5 transition transform hover:scale-105">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+                        </path>
+                    </svg>
+                    Octroyer un Crédit
+                </button>
+
+                <button data-modal-target="repayment-modal" data-modal-toggle="repayment-modal"
+                    class="flex items-center justify-center text-white bg-emerald-600 hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-300 font-bold rounded-lg text-sm px-5 py-2.5 transition transform hover:scale-105">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                        </path>
+                    </svg>
+                    Rembourser un Crédit
+                </button>
+            </div>
         </div>
 
         {{-- Section Statistiques --}}
@@ -120,7 +133,8 @@
                         <form id="filterForm" action="{{ route('finance.credit') }}" method="GET">
                             <ul class="space-y-2 text-sm">
                                 <li class="flex items-center">
-                                    <input type="checkbox" name="status[]" value="en_cours" onchange="this.form.submit()"
+                                    <input type="checkbox" name="status[]" value="en_cours"
+                                        onchange="this.form.submit()"
                                         {{ is_array(request('status')) && in_array('en_cours', request('status')) ? 'checked' : '' }}
                                         class="w-4 h-4 text-kzz-blue bg-gray-100 border-gray-300 rounded focus:ring-kzz-blue">
                                     <label class="ml-2 text-gray-700">En cours</label>
@@ -209,8 +223,9 @@
         </div>
     </div>
 
-    {{-- Inclusion du Modal --}}
+    {{-- Inclusion des Modals --}}
     @include('finance.create_credit')
+    @include('finance.remboursement_credit')
 
     <script>
         // Script de simulation de calcul dans le modal
