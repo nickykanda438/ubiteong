@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Credit;
 use App\Models\Membre;
+use App\Models\RemboursementCredit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -53,13 +54,12 @@ class CreditController extends Controller
         |--------------------------------------------------------------------------
         */
         $stats = [
+            // Statistiques globales
             'total_encours' => $credits
                 ->where('statut', '!=', 'solde')
                 ->sum(fn($c) => $c->montant_total_du),
 
-            'total_rembourse' => $credits
-                ->where('statut', 'solde')
-                ->sum(fn($c) => $c->montant_principal),
+            'total_rembourse' => RemboursementCredit::sum('montant_paye'),
 
             'reste_a_payer' => $credits
                 ->sum(fn($c) => $c->reste_a_payer),
@@ -67,6 +67,45 @@ class CreditController extends Controller
             'total_depasse' => $credits
                 ->filter(fn($c) => $c->estEnDepassement())
                 ->sum(fn($c) => $c->montant_total_du),
+
+            // Statistiques par devise
+            'usd' => [
+                'total_encours' => $credits
+                    ->where('statut', '!=', 'solde')
+                    ->where('devise', 'USD')
+                    ->sum(fn($c) => $c->montant_total_du),
+
+                'total_rembourse' => RemboursementCredit::whereHas('credit', fn($q) => $q->where('devise', 'USD'))
+                    ->sum('montant_paye'),
+
+                'reste_a_payer' => $credits
+                    ->where('devise', 'USD')
+                    ->sum(fn($c) => $c->reste_a_payer),
+
+                'total_depasse' => $credits
+                    ->where('devise', 'USD')
+                    ->filter(fn($c) => $c->estEnDepassement())
+                    ->sum(fn($c) => $c->montant_total_du),
+            ],
+
+            'cdf' => [
+                'total_encours' => $credits
+                    ->where('statut', '!=', 'solde')
+                    ->where('devise', 'CDF')
+                    ->sum(fn($c) => $c->montant_total_du),
+
+                'total_rembourse' => RemboursementCredit::whereHas('credit', fn($q) => $q->where('devise', 'CDF'))
+                    ->sum('montant_paye'),
+
+                'reste_a_payer' => $credits
+                    ->where('devise', 'CDF')
+                    ->sum(fn($c) => $c->reste_a_payer),
+
+                'total_depasse' => $credits
+                    ->where('devise', 'CDF')
+                    ->filter(fn($c) => $c->estEnDepassement())
+                    ->sum(fn($c) => $c->montant_total_du),
+            ],
         ];
 
         return view('finance.credit', compact('membres', 'credits', 'stats'));
@@ -131,36 +170,52 @@ class CreditController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | REMBOURSEMENT
+    | REMBOURSEMENT AVEC HISTORIQUE
     |--------------------------------------------------------------------------
     */
-    public function rembourser(Request $request, $id)
+    public function rembourser(Request $request)
     {
         $request->validate([
-            'montant' => 'required|numeric|min:1'
+            'credit_id' => 'required|exists:credits,id',
+            'montant_paye' => 'required|numeric|min:0.01',
+            'date_paiement' => 'required|date',
+            'mode_paiement' => 'required|in:Espece,Banque,Mobile Money',
+            'commentaire' => 'nullable|string|max:500',
         ]);
 
-        $credit = Credit::findOrFail($id);
+        $credit = Credit::findOrFail($request->credit_id);
 
         DB::transaction(function () use ($credit, $request) {
+            $montantPaye = $request->montant_paye;
+            $resteAvant = $credit->reste_a_payer;
 
-            // Montant restant actuel
-            $resteActuel = $credit->reste_a_payer;
+            // Calculer le nouveau reste
+            $nouveauReste = max(0, $resteAvant - $montantPaye);
 
-            // Nouveau reste
-            $nouveauReste = $resteActuel - $request->montant;
+            // Créer l'enregistrement de remboursement
+            RemboursementCredit::create([
+                'credit_id' => $credit->id,
+                'montant_paye' => $montantPaye,
+                'date_paiement' => $request->date_paiement,
+                'mode_paiement' => $request->mode_paiement,
+                'commentaire' => $request->commentaire,
+                'reste_avant' => $resteAvant,
+                'reste_apres' => $nouveauReste,
+            ]);
 
+            // Mettre à jour le crédit
+            $credit->reste_a_payer = $nouveauReste;
+
+            // Si le crédit est soldé
             if ($nouveauReste <= 0) {
-                $credit->reste_a_payer = 0;
                 $credit->statut = 'solde';
-            } else {
-                $credit->reste_a_payer = $nouveauReste;
             }
 
             $credit->save();
         });
 
-        return back()->with('success', 'Remboursement enregistré avec succès.');
+        return redirect()->route('finance.credit')
+            ->with('success', 'Remboursement enregistré avec succès.');
     }
 
     // credit en retard 

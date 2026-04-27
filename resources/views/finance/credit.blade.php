@@ -57,32 +57,94 @@
 
         {{-- Section Statistiques --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {{-- Total en cours --}}
             <div class="bg-white p-4 rounded-xl border-l-4 border-blue-500 shadow-sm">
                 <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Total en cours</p>
-                <p class="text-xl font-black text-gray-900 mt-1">
-                    {{ number_format($stats['total_encours'] ?? 0, 0, ',', ' ') }} FC</p>
-                <span class="text-[10px] text-blue-600 font-semibold italic">Capital prêté actif</span>
+                <div class="space-y-1 mt-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-blue-600">USD</span>
+                        <span class="text-lg font-black text-gray-900">
+                            {{ number_format($stats['usd']['total_encours'] ?? 0, 0, ',', ' ') }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-blue-600">CDF</span>
+                        <span class="text-lg font-black text-gray-900">
+                            {{ number_format($stats['cdf']['total_encours'] ?? 0, 0, ',', ' ') }}
+                        </span>
+                    </div>
+                </div>
+                <span class="text-[10px] text-blue-600 font-semibold italic block mt-2">Capital prêté actif</span>
             </div>
 
+            {{-- Total Remboursé --}}
             <div class="bg-white p-4 rounded-xl border-l-4 border-green-500 shadow-sm">
                 <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Remboursé</p>
-                <p class="text-xl font-black text-gray-900 mt-1">
-                    {{ number_format($stats['total_rembourse'] ?? 0, 0, ',', ' ') }} FC</p>
-                <span class="text-[10px] text-green-600 font-semibold italic">Paiements reçus</span>
+                <div class="space-y-1 mt-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-green-600">USD</span>
+                        <span class="text-lg font-black text-gray-900">
+                            {{ number_format($stats['usd']['total_rembourse'] ?? 0, 0, ',', ' ') }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-green-600">CDF</span>
+                        <span class="text-lg font-black text-gray-900">
+                            {{ number_format($stats['cdf']['total_rembourse'] ?? 0, 0, ',', ' ') }}
+                        </span>
+                    </div>
+                </div>
+                <span class="text-[10px] text-green-600 font-semibold italic block mt-2">Paiements reçus</span>
             </div>
 
+            {{-- Reste à percevoir --}}
             <div class="bg-white p-4 rounded-xl border-l-4 border-orange-500 shadow-sm">
                 <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Reste à percevoir</p>
-                <p class="text-xl font-black text-gray-900 mt-1">
-                    {{ number_format($stats['reste_a_payer'] ?? 0, 0, ',', ' ') }} FC</p>
-                <span class="text-[10px] text-orange-600 font-semibold italic">Balance restante</span>
+                <div class="space-y-1 mt-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-orange-600">USD</span>
+                        <span class="text-lg font-black text-gray-900">
+                            {{ number_format($stats['usd']['reste_a_payer'] ?? 0, 0, ',', ' ') }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-orange-600">CDF</span>
+                        <span class="text-lg font-black text-gray-900">
+                            {{ number_format($stats['cdf']['reste_a_payer'] ?? 0, 0, ',', ' ') }}
+                        </span>
+                    </div>
+                </div>
+                <span class="text-[10px] text-orange-600 font-semibold italic block mt-2">Balance restante</span>
             </div>
 
+            {{-- En Souffrance --}}
             <div class="bg-white p-4 rounded-xl border-l-4 border-red-500 shadow-sm">
                 <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">En Souffrance</p>
-                <p class="text-xl font-black text-red-600 mt-1">
-                    {{ number_format($stats['total_depasse'] ?? 0, 0, ',', ' ') }} FC</p>
-                <span class="text-[10px] text-red-600 font-semibold italic">Délai expiré</span>
+                <div class="space-y-1 mt-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-red-600">USD</span>
+                        <span class="text-lg font-black text-red-600">
+                            {{ number_format($stats['usd']['total_depasse'] ?? 0, 0, ',', ' ') }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-red-600">CDF</span>
+                        <span class="text-lg font-black text-red-600">
+                            {{ number_format($stats['cdf']['total_depasse'] ?? 0, 0, ',', ' ') }}
+                        </span>
+                    </div>
+                </div>
+                <span class="text-[10px] text-red-600 font-semibold italic block mt-2">Délai expiré - Taux 40%</span>
+                @if (($stats['usd']['total_depasse'] ?? 0) + ($stats['cdf']['total_depasse'] ?? 0) > 0)
+                    <div class="mt-2 flex items-center">
+                        <svg class="w-3 h-3 text-red-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-[9px] text-red-600 font-bold uppercase">Attention requise</span>
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -128,7 +190,8 @@
                     </button>
 
                     {{-- Dropdown Filtre --}}
-                    <div id="filterDropdown" class="z-10 hidden w-48 p-3 bg-white rounded-lg shadow border border-gray-100">
+                    <div id="filterDropdown"
+                        class="z-10 hidden w-48 p-3 bg-white rounded-lg shadow border border-gray-100">
                         <h6 class="mb-3 text-sm font-bold text-gray-900 italic">État du crédit</h6>
                         <form id="filterForm" action="{{ route('finance.credit') }}" method="GET">
                             <ul class="space-y-2 text-sm">
@@ -164,7 +227,7 @@
                         <tr>
                             <th scope="col" class="px-4 py-3">Membre</th>
                             <th scope="col" class="px-4 py-3">Montant Prêté</th>
-                            <th scope="col" class="px-4 py-3">Intérêts (20%)</th>
+                            <th scope="col" class="px-4 py-3">Paiement mensuel (20%)</th>
                             <th scope="col" class="px-4 py-3">Échéance Finale</th>
                             <th scope="col" class="px-4 py-3">Statut</th>
                             <th scope="col" class="px-4 py-3 text-right">Actions</th>
@@ -179,7 +242,7 @@
                                 <td class="px-4 py-4 font-medium">
                                     {{ number_format($credit->montant_principal, 0, ',', ' ') }} FC</td>
                                 <td class="px-4 py-4 text-kzz-blue font-semibold">
-                                    + {{ number_format($credit->montant_principal * 0.2, 0, ',', ' ') }} FC
+                                    {{ number_format($credit->montant_principal * 0.2, 0, ',', ' ') }} FC
                                 </td>
                                 <td class="px-4 py-4 italic">
                                     {{ \Carbon\Carbon::parse($credit->date_echeance_finale)->format('d/m/Y') }}

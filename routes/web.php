@@ -81,6 +81,11 @@ Route::middleware('auth')->group(function () {
             Route::post('/{id}/rembourser', [CreditController::class, 'rembourser'])->name('rembourser');
         });
 
+        // --- REMBOURSEMENTS DE CRÉDITS ---
+        Route::prefix('repayments')->name('repayments.')->group(function () {
+            Route::post('/', [CreditController::class, 'rembourser'])->name('store');
+        });
+
         // --- GESTION DES ÉPARGNES ---
         Route::prefix('epargnes')->name('epargnes.')->group(function () {
             Route::post('/', [EpargneController::class, 'store'])->name('store');

@@ -36,6 +36,11 @@ class Credit extends Model
         return $this->belongsTo(Membre::class);
     }
 
+    public function remboursements()
+    {
+        return $this->hasMany(RemboursementCredit::class);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | CALCUL DES MOIS (NORMAL + RETARD)
@@ -77,25 +82,30 @@ class Credit extends Model
             return $this->montant_principal;
         }
 
-        $mois = $this->mois_details;
+        if ($this->estEnDepassement()) {
+            return $this->montant_principal + ($this->montant_principal * 0.40);
+        }
 
-        // 20% normal
-        $interetNormal = $this->montant_principal * 0.20 * $mois['normaux'];
+        return $this->montant_principal;
+    }
 
-        // 40% en retard
-        $interetRetard = $this->montant_principal * 0.40 * $mois['retard'];
-
-        return $this->montant_principal + $interetNormal + $interetRetard;
+    public function getPaiementMensuelAttribute()
+    {
+        return $this->montant_principal * 0.20;
     }
 
     /*
     |--------------------------------------------------------------------------
-    | INTÉRÊTS SEULS (POUR AFFICHAGE)
+    | PÉNALITÉ DE RETARD (POUR AFFICHAGE)
     |--------------------------------------------------------------------------
     */
     public function getInteretTotalAttribute()
     {
-        return $this->montant_total_du - $this->montant_principal;
+        if ($this->estEnDepassement()) {
+            return $this->montant_principal * 0.40;
+        }
+
+        return 0;
     }
 
     /*

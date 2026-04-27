@@ -12,8 +12,8 @@
                         Octroi de Nouveau Crédit
                     </h3>
                     <p class="text-xs text-gray-500 mt-1">
-                        Taux mensuel : <span class="font-bold text-kzz-blue">20%</span> |
-                        Retard : <span class="font-bold text-red-600">40%</span>
+                        Paiement mensuel fixe : <span class="font-bold text-kzz-blue">20% du capital</span> |
+                        Retard : <span class="font-bold text-red-600">40% du capital</span>
                     </p>
                 </div>
                 <button type="button" data-modal-hide="credit-modal"
@@ -109,13 +109,13 @@
                                 <p id="modal_total" class="text-2xl font-black text-white leading-none">0 USD</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Intérêts (<span
-                                        id="taux_affiche" class="text-blue-400">20% x 0</span>)</p>
-                                <p id="modal_int" class="text-lg font-bold text-blue-400 leading-none">+ 0 USD</p>
+                                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Paiement
+                                    mensuel (<span id="taux_affiche" class="text-blue-400">20% du capital</span>)</p>
+                                <p id="modal_int" class="text-lg font-bold text-blue-400 leading-none">0 USD</p>
                             </div>
                         </div>
                         <div class="pt-3 border-t border-gray-800 flex justify-between items-center">
-                            <span class="text-[10px] text-gray-500 italic">Si retard (Simulation 1 mois) :</span>
+                            <span class="text-[10px] text-gray-500 italic">Si retard : pénalité 40% du capital</span>
                             <span id="simul_retard" class="text-xs font-bold text-red-500">+ 0 USD</span>
                         </div>
                     </div>
@@ -184,13 +184,13 @@
                 }
 
                 el.dureeLabel.innerText = `Durée : ${mois} mois`;
-                el.tauxAffiche.innerText = `20% x ${mois}`;
+                el.tauxAffiche.innerText = `20% du capital`;
 
-                const interets = montant * 0.20 * mois;
-                const total = montant + interets;
+                const mensualite = montant * 0.20;
+                const total = montant;
                 const simulRetard = montant * 0.40;
 
-                el.displayInt.innerText = `+ ${interets.toLocaleString('fr-FR')} ${devise}`;
+                el.displayInt.innerText = `${mensualite.toLocaleString('fr-FR')} ${devise}`;
                 el.displayTotal.innerText = `${total.toLocaleString('fr-FR')} ${devise}`;
                 el.displaySimul.innerText = `+ ${simulRetard.toLocaleString('fr-FR')} ${devise}`;
 
@@ -200,7 +200,10 @@
                 el.btn.disabled = false;
                 el.dureeLabel.innerText = "Durée : 0 mois";
                 el.dureeLabel.className = "text-xs font-bold italic text-gray-500";
-                el.tauxAffiche.innerText = "20% x 0";
+                el.tauxAffiche.innerText = "20% du capital";
+                el.displayInt.innerText = `0 ${el.devise.value}`;
+                el.displayTotal.innerText = `0 ${el.devise.value}`;
+                el.displaySimul.innerText = `+ 0 ${el.devise.value}`;
             }
         }
 
