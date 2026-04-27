@@ -119,9 +119,11 @@
                                 <div>
                                     <label class="block mb-2 text-sm font-bold text-gray-700">Ancienneté</label>
                                     <input type="text" name="anciennete"
-                                        value="{{ old('anciennete', $membre->anciennete ?? '') }}"
+                                        value="{{ old('anciennete', $membre->anciennete ?? '') }}" readonly
                                         class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-kzz-blue"
-                                        placeholder="Ex: 5 ans, Depuis 2020...">
+                                        placeholder="Calcul automatique depuis la date d'adhésion">
+                                    <p class="text-xs text-gray-500 mt-1">L'ancienneté est calculée automatiquement à partir
+                                        de la date d'adhésion.</p>
                                 </div>
                             </div>
                         </div>
@@ -244,6 +246,60 @@
     </section>
 
     <script>
+        function computeAncienneteFromDate(dateValue) {
+            if (!dateValue) {
+                return '';
+            }
+
+            const adhesionDate = new Date(dateValue);
+            const now = new Date();
+
+            if (isNaN(adhesionDate.getTime())) {
+                return '';
+            }
+
+            let years = now.getFullYear() - adhesionDate.getFullYear();
+            let months = now.getMonth() - adhesionDate.getMonth();
+
+            if (now.getDate() < adhesionDate.getDate()) {
+                months -= 1;
+            }
+
+            if (months < 0) {
+                years -= 1;
+                months += 12;
+            }
+
+            if (years < 0) {
+                return '0 mois';
+            }
+
+            const parts = [];
+            if (years > 0) {
+                parts.push(years + ' an' + (years > 1 ? 's' : ''));
+            }
+            if (months > 0) {
+                parts.push(months + ' mois');
+            }
+
+            return parts.length ? parts.join(' ') : 'Moins d’un mois';
+        }
+
+        const adhesionInput = document.querySelector('input[name="date_adhesion"]');
+        const ancienneteInput = document.querySelector('input[name="anciennete"]');
+
+        const updateAnciennete = () => {
+            if (!adhesionInput || !ancienneteInput) {
+                return;
+            }
+            ancienneteInput.value = computeAncienneteFromDate(adhesionInput.value);
+        };
+
+        if (adhesionInput) {
+            adhesionInput.addEventListener('change', updateAnciennete);
+            updateAnciennete();
+        }
+
         document.getElementById('image_input').onchange = evt => {
             const [file] = document.getElementById('image_input').files
             if (file) {

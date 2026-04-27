@@ -67,6 +67,10 @@ class MembreController extends Controller
             'adresse_membre' => 'nullable|string', // CORRIGÉ : rendu optionnel pour plus de flexibilité
         ]);
 
+        if (!empty($validated['date_adhesion'])) {
+            $validated['anciennete'] = Membre::calculateAncienneteFromDate($validated['date_adhesion']);
+        }
+
         // Gestion de la Photo
         if ($request->hasFile('photo_membre')) {
             $validated['photo_membre'] = $request->file('photo_membre')->store('membres/photos', 'public');
@@ -126,6 +130,10 @@ class MembreController extends Controller
                 Storage::disk('public')->delete($membre->photo_membre);
             }
             $validated['photo_membre'] = $request->file('photo_membre')->store('membres/photos', 'public');
+        }
+
+        if (!empty($validated['date_adhesion'])) {
+            $validated['anciennete'] = Membre::calculateAncienneteFromDate($validated['date_adhesion']);
         }
 
         // Mise à jour Pièce d'identité : Supprime l'ancienne si une nouvelle est envoyée
