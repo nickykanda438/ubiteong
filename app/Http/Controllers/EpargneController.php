@@ -11,6 +11,19 @@ use Carbon\Carbon;
 class EpargneController extends Controller
 {
     /**
+     * Page d'accueil des épargnes
+     */
+    public function index()
+    {
+        $epargnes = Epargne::with('transactions')->latest()->get();
+        $totalEpargne = Epargne::sum('solde_actuel');
+        $nombreEpargnants = Epargne::count();
+        $transactionsRecentes = TransactionEpargne::with('epargne')->latest()->take(10)->get();
+
+        return view('finance.epargne', compact('epargnes', 'totalEpargne', 'nombreEpargnants', 'transactionsRecentes'));
+    }
+
+    /**
      * 1. Création de l'épargneur (Ouverture de compte)
      */
     public function store(Request $request)

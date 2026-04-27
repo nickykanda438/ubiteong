@@ -27,7 +27,7 @@
                             d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
                         </path>
                     </svg>
-                    Enregistrer une Épargne
+                    <a href="{{ route('finance.epargne') }}" class="text-white no-underline">Enregistrer une Épargne</a>
                 </button>
             </div>
         </div>
@@ -62,9 +62,17 @@
                         </svg>
                     </div>
                 </div>
-                <div class="text-2xl font-bold text-kzz-black">
-                    {{ number_format($statsCredits['total_octroye'], 0, ',', ' ') }} FC</div>
-                <p class="text-xs text-gray-500 mt-1">Volume global prêté</p>
+                <div class="space-y-2 mt-1">
+                    <div class="flex justify-between items-center text-sm font-semibold text-kzz-black">
+                        <span>USD</span>
+                        <span>{{ number_format($statsCredits['total_octroye_usd'] ?? 0, 0, ',', ' ') }} USD</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm font-semibold text-kzz-black">
+                        <span>CDF</span>
+                        <span>{{ number_format($statsCredits['total_octroye_cdf'] ?? 0, 0, ',', ' ') }} CDF</span>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">Volume global prêté par devise</p>
             </div>
 
             <div class="p-5 bg-white rounded-2xl border border-gray-200 shadow-sm">
@@ -77,9 +85,17 @@
                         </svg>
                     </div>
                 </div>
-                <div class="text-2xl font-bold text-kzz-black">
-                    {{ number_format($statsCredits['total_restant'], 0, ',', ' ') }} FC</div>
-                <p class="text-xs text-orange-600 font-medium mt-1 italic italic">Créances actives</p>
+                <div class="space-y-2 mt-1">
+                    <div class="flex justify-between items-center text-sm font-semibold text-kzz-black">
+                        <span>USD</span>
+                        <span>{{ number_format($statsCredits['total_restant_usd'] ?? 0, 0, ',', ' ') }} USD</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm font-semibold text-kzz-black">
+                        <span>CDF</span>
+                        <span>{{ number_format($statsCredits['total_restant_cdf'] ?? 0, 0, ',', ' ') }} CDF</span>
+                    </div>
+                </div>
+                <p class="text-xs text-orange-600 font-medium mt-1 italic">Créances actives par devise</p>
             </div>
 
             <div class="p-5 bg-white rounded-2xl border border-red-100 shadow-sm bg-red-50/30">
@@ -121,7 +137,8 @@
                                 <tr class="bg-white border-b hover:bg-gray-50 transition">
                                     <td class="px-6 py-4 font-medium text-kzz-black">{{ $credit->membre->nom_complet }}</td>
                                     <td class="px-6 py-4 text-right font-bold">
-                                        {{ number_format($credit->montant_principal, 0, ',', ' ') }} FCFA</td>
+                                        {{ number_format($credit->montant_principal, 0, ',', ' ') }} {{ $credit->devise }}
+                                    </td>
                                     <td class="px-6 py-4 text-center">
                                         @if ($credit->statut == 'solde')
                                             <span
@@ -163,12 +180,14 @@
                         <tbody>
                             @forelse($deposits as $deposit)
                                 <tr class="bg-white border-b hover:bg-gray-50 transition">
-                                    <td class="px-6 py-4 font-medium text-kzz-black">{{ $deposit->membre->nom_complet }}
+                                    <td class="px-6 py-4 font-medium text-kzz-black">
+                                        {{ $deposit->epargne->nom_complet ?? 'N/A' }}
                                     </td>
                                     <td class="px-6 py-4 text-right font-bold text-kzz-green">+
-                                        {{ number_format($deposit->montant, 0, ',', ' ') }} FCFA</td>
+                                        {{ number_format($deposit->montant_depose, 0, ',', ' ') }} FC</td>
                                     <td class="px-6 py-4 text-center text-xs italic">
-                                        {{ $deposit->created_at->format('d/m/Y') }}</td>
+                                        {{ $deposit->date_transaction ? $deposit->date_transaction->format('d/m/Y') : $deposit->created_at->format('d/m/Y') }}
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>

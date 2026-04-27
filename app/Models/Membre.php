@@ -78,6 +78,13 @@ class Membre extends Model
             return asset('storage/' . $this->photo_membre);
         }
         return asset('images/default-avatar.png');
-}
+    }
 
+    /**
+     * Relation avec les crédits
+     */
+    public function credits()
+    {
+        return $this->hasMany(Credit::class);
+    }
 }

@@ -67,11 +67,14 @@ Route::middleware('auth')->group(function () {
     // --- MODULE FINANCE ---
     Route::prefix('finance')->name('finance.')->group(function () {
         
-        // Page principale
-        Route::get('/', [CreditController::class, 'index'])->name('index');
+        // Page principale (tableau de bord)
+        Route::get('/', [CreditController::class, 'dashboard'])->name('index');
 
-        // CORRECTION ICI : Changement de 'create' vers 'index'
+        // Gestion des crédits
         Route::get('/credit', [CreditController::class, 'index'])->name('credit');
+
+        // Gestion des épargnes
+        Route::get('/epargne', [EpargneController::class, 'index'])->name('epargne');
 
         // --- GESTION DES CRÉDITS (Actions) ---
         Route::prefix('credits')->name('credits.')->group(function () {

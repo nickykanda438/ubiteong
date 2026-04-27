@@ -5,12 +5,53 @@ namespace App\Http\Controllers;
 use App\Models\Credit;
 use App\Models\Membre;
 use App\Models\RemboursementCredit;
+use App\Models\Epargne;
+use App\Models\TransactionEpargne;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class CreditController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | TABLEAU DE BORD FINANCIER (PAGE D'ACCUEIL)
+    |--------------------------------------------------------------------------
+    */
+    public function dashboard()
+    {
+        // Statistiques générales pour le tableau de bord
+        $totalCredits = Credit::where('statut', '!=', 'solde')->count();
+        $totalEpargne = Epargne::sum('solde_actuel');
+        $creditsEnRetard = Credit::where('statut', 'en_retard')->count();
+        $membresActifs = Membre::whereHas('credits', function($q) {
+            $q->where('statut', '!=', 'solde');
+        })->count();
+
+        $statsCredits = [
+            'total_octroye' => Credit::sum('montant_principal'),
+            'total_octroye_usd' => Credit::where('devise', 'USD')->sum('montant_principal'),
+            'total_octroye_cdf' => Credit::where('devise', 'CDF')->sum('montant_principal'),
+            'total_restant' => Credit::sum('reste_a_payer'),
+            'total_restant_usd' => Credit::where('devise', 'USD')->sum('reste_a_payer'),
+            'total_restant_cdf' => Credit::where('devise', 'CDF')->sum('reste_a_payer'),
+            'nb_en_retard' => $creditsEnRetard,
+        ];
+
+        $creditsRecents = Credit::with('membre')->latest()->take(10)->get();
+        $deposits = TransactionEpargne::with('epargne')->latest()->take(10)->get();
+
+        return view('finance.index', compact(
+            'totalCredits',
+            'totalEpargne',
+            'creditsEnRetard',
+            'membresActifs',
+            'statsCredits',
+            'creditsRecents',
+            'deposits'
+        ));
+    }
+
     /*
     |--------------------------------------------------------------------------
     | LISTE DES CRÉDITS + FILTRES + STATISTIQUES
