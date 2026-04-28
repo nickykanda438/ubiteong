@@ -46,6 +46,10 @@ class EpargneController extends Controller
             'montant_reference' => 'nullable|numeric|min:0',
         ]);
 
+        $validated['montant_cible'] = $validated['montant_reference'] ?? 0;
+        $validated['frequence_engagement'] = 'journalier';
+        $validated['solde_actuel'] = 0;
+
         $epargne = Epargne::create($validated);
 
         return back()->with(
@@ -62,6 +66,8 @@ class EpargneController extends Controller
         $validated = $request->validate([
             'numero_carte' => 'required|exists:epargnes,numero_carte',
             'montant' => 'required|numeric|min:1',
+            'nom_deposant' => 'required|string',
+            'lien_deposant' => 'required|in:proprietaire,delegue',
         ]);
 
         $epargne = Epargne::where('numero_carte', $validated['numero_carte'])->firstOrFail();
@@ -69,9 +75,11 @@ class EpargneController extends Controller
         DB::transaction(function () use ($epargne, $validated) {
             TransactionEpargne::create([
                 'epargne_id' => $epargne->id,
-                'montant' => $validated['montant'],
-                'type' => TransactionEpargne::TYPE_VERSEMENT,
-                'date_operation' => now(),
+                'montant_depose' => $validated['montant'],
+                'date_transaction' => now(),
+                'nom_deposant' => $validated['nom_deposant'],
+                'lien_deposant' => $validated['lien_deposant'],
+                'numero_carte_utilise' => $validated['numero_carte'],
             ]);
         });
 

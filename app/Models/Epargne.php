@@ -21,6 +21,9 @@ class Epargne extends Model
         'telephone',
         'adresse',
         'montant_reference', // objectif journalier indicatif
+        'montant_cible',
+        'frequence_engagement',
+        'solde_actuel',
         'est_actif'
     ];
 
@@ -29,6 +32,8 @@ class Epargne extends Model
      */
     protected $casts = [
         'montant_reference' => 'decimal:2',
+        'montant_cible' => 'decimal:2',
+        'solde_actuel' => 'decimal:2',
         'est_actif' => 'boolean',
     ];
 
@@ -69,14 +74,14 @@ class Epargne extends Model
     public function getSoldeAttribute()
     {
         $versements = $this->transactions()
-            ->where('type', TransactionEpargne::TYPE_VERSEMENT)
-            ->sum('montant');
+            ->where('montant_depose', '>=', 0)
+            ->sum('montant_depose');
 
         $retraits = $this->transactions()
-            ->where('type', TransactionEpargne::TYPE_RETRAIT)
-            ->sum('montant');
+            ->where('montant_depose', '<', 0)
+            ->sum('montant_depose');
 
-        return $versements - $retraits;
+        return $versements + $retraits;
     }
 
     /**
@@ -85,10 +90,10 @@ class Epargne extends Model
     public function getTotalVersementsMensuelAttribute()
     {
         return $this->transactions()
-            ->where('type', TransactionEpargne::TYPE_VERSEMENT)
-            ->whereMonth('date_operation', now()->month)
-            ->whereYear('date_operation', now()->year)
-            ->sum('montant');
+            ->where('montant_depose', '>=', 0)
+            ->whereMonth('date_transaction', now()->month)
+            ->whereYear('date_transaction', now()->year)
+            ->sum('montant_depose');
     }
 
     /**
@@ -97,10 +102,10 @@ class Epargne extends Model
     public function getTotalRetraitsMensuelAttribute()
     {
         return $this->transactions()
-            ->where('type', TransactionEpargne::TYPE_RETRAIT)
-            ->whereMonth('date_operation', now()->month)
-            ->whereYear('date_operation', now()->year)
-            ->sum('montant');
+            ->where('montant_depose', '<', 0)
+            ->whereMonth('date_transaction', now()->month)
+            ->whereYear('date_transaction', now()->year)
+            ->sum('montant_depose');
     }
 
     /**

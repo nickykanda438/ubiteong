@@ -1,10 +1,19 @@
 {{-- Modal Création Compte Épargne --}}
 <div id="create-epargne-modal" tabindex="-1" aria-hidden="true"
-    class="fixed inset-0 z-50 hidden overflow-y-auto overflow-x-hidden">
+    class="fixed inset-0 z-50 hidden overflow-y-auto overflow-x-hidden flex items-center justify-center bg-black bg-opacity-50">
     <div class="relative p-4 w-full max-w-2xl max-h-full">
-        <div class="relative bg-white rounded-lg shadow-xl">
-            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
-                <h3 class="text-xl font-semibold text-kzz-black">Créer un Compte d'Épargne</h3>
+        <div class="relative bg-white rounded-xl shadow-2xl">
+
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t bg-gray-50">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-kzz-blue bg-opacity-10 rounded-lg">
+                        <svg class="w-6 h-6 text-kzz-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900">Nouveau Compte Épargne</h3>
+                </div>
                 <button type="button"
                     class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
                     data-modal-hide="create-epargne-modal">
@@ -15,178 +24,104 @@
                 </button>
             </div>
 
-            <form action="{{ route('finance.epargnes.store') }}" method="POST" class="p-4 md:p-5 space-y-4">
+            <form action="{{ route('finance.epargnes.store') }}" method="POST" class="p-6 space-y-6">
                 @csrf
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                {{-- Section Identité --}}
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="block mb-2 text-sm font-bold text-gray-700">Nom</label>
+                        <label class="block mb-2 text-sm font-semibold text-gray-700">Nom <span
+                                class="text-red-500">*</span></label>
                         <input type="text" name="nom"
-                            class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-kzz-blue focus:border-kzz-blue"
-                            required>
+                            class="w-full p-2.5 bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-kzz-blue focus:border-kzz-blue outline-none transition-all"
+                            placeholder="Ex: KABAMBA" required>
                     </div>
                     <div>
-                        <label class="block mb-2 text-sm font-bold text-gray-700">Postnom</label>
+                        <label class="block mb-2 text-sm font-semibold text-gray-700">Postnom <span
+                                class="text-red-500">*</span></label>
                         <input type="text" name="postnom"
-                            class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-kzz-blue focus:border-kzz-blue"
-                            required>
+                            class="w-full p-2.5 bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-kzz-blue focus:border-kzz-blue outline-none transition-all"
+                            placeholder="Ex: MUKENDI" required>
                     </div>
                     <div>
-                        <label class="block mb-2 text-sm font-bold text-gray-700">Prénom</label>
+                        <label class="block mb-2 text-sm font-semibold text-gray-700">Prénom <span
+                                class="text-red-500">*</span></label>
                         <input type="text" name="prenom"
-                            class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-kzz-blue focus:border-kzz-blue"
-                            required>
-                    </div>
-                    <div>
-                        <label class="block mb-2 text-sm font-bold text-gray-700">Téléphone</label>
-                        <input type="tel" name="telephone"
-                            class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-kzz-blue focus:border-kzz-blue"
-                            required>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block mb-2 text-sm font-bold text-gray-700">Adresse</label>
-                        <textarea name="adresse" rows="3"
-                            class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-kzz-blue focus:border-kzz-blue"
-                            required></textarea>
-                    </div>
-                    <div>
-                        <label class="block mb-2 text-sm font-bold text-gray-700">Montant Cible (FC)</label>
-                        <input type="number" name="montant_cible" min="0"
-                            class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-kzz-blue focus:border-kzz-blue"
-                            required>
-                    </div>
-                    <div>
-                        <label class="block mb-2 text-sm font-bold text-gray-700">Fréquence d'Engagement</label>
-                        <select name="frequence_engagement"
-                            class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-kzz-blue focus:border-kzz-blue"
-                            required>
-                            <option value="journalier">Journalier</option>
-                            <option value="mensuel">Mensuel</option>
-                        </select>
+                            class="w-full p-2.5 bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-kzz-blue focus:border-kzz-blue outline-none transition-all"
+                            placeholder="Ex: Jean" required>
                     </div>
                 </div>
 
-                <div class="flex items-center justify-end pt-4 border-t">
+                {{-- Section Contact & Objectif --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block mb-2 text-sm font-semibold text-gray-700">Téléphone <span
+                                class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                                <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <input type="tel" name="telephone"
+                                class="ps-10 w-full p-2.5 bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-kzz-blue focus:border-kzz-blue outline-none"
+                                placeholder="0810000000" required>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm font-semibold text-gray-700">Objectif Journalier (FC)</label>
+                        <div class="relative">
+                            <div
+                                class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none font-bold text-gray-500">
+                                FC</div>
+                            <input type="number" name="montant_reference" min="0" step="500"
+                                class="ps-10 w-full p-2.5 bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-kzz-blue focus:border-kzz-blue outline-none"
+                                placeholder="Ex: 5000">
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500 italic">Cet objectif est indicatif et non obligatoire.</p>
+                    </div>
+                </div>
+
+                {{-- Adresse --}}
+                <div>
+                    <label class="block mb-2 text-sm font-semibold text-gray-700">Adresse de résidence</label>
+                    <textarea name="adresse" rows="2"
+                        class="w-full p-2.5 bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-kzz-blue focus:border-kzz-blue outline-none"
+                        placeholder="Commune, Quartier, Avenue, N°..."></textarea>
+                </div>
+
+                <div class="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 flex items-start gap-3">
+                    <svg class="w-5 h-5 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                        <span class="font-bold">Info :</span> Le numéro de carte sera généré automatiquement à la
+                        validation. Le système enregistrera la date actuelle ({{ date('d/m/Y') }}) comme date de
+                        création.
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-4 border-t">
                     <button type="button"
-                        class="px-5 py-2.5 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-blue-700 focus:ring-4 focus:outline-none focus:ring-gray-200 mr-3"
-                        data-modal-hide="create-epargne-modal">Annuler</button>
+                        class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-200"
+                        data-modal-hide="create-epargne-modal">
+                        Annuler
+                    </button>
                     <button type="submit"
-                        class="px-5 py-2.5 text-sm font-medium text-white bg-kzz-green rounded-lg hover:bg-opacity-90 focus:ring-4 focus:outline-none focus:ring-green-300">Créer
-                        le Compte</button>
+                        class="px-5 py-2.5 text-sm font-medium text-white bg-kzz-blue rounded-lg hover:bg-opacity-90 focus:ring-4 focus:ring-blue-300 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        Confirmer la Création
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-{{-- Modals pour Dépôt et Retrait --}}
-@foreach ($epargnes as $epargne)
-    {{-- Modal Dépôt --}}
-    <div id="depot-modal-{{ $epargne->id }}" tabindex="-1" aria-hidden="true"
-        class="fixed inset-0 z-50 hidden overflow-y-auto overflow-x-hidden">
-        <div class="relative p-4 w-full max-w-md max-h-full">
-            <div class="relative bg-white rounded-lg shadow-xl">
-                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
-                    <h3 class="text-lg font-semibold text-kzz-black">Dépôt - {{ $epargne->nom_complet }}</h3>
-                    <button type="button"
-                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
-                        data-modal-hide="depot-modal-{{ $epargne->id }}">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 14 14">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                        </svg>
-                    </button>
-                </div>
-
-                <form action="{{ route('finance.epargnes.depose') }}" method="POST" class="p-4 md:p-5 space-y-4">
-                    @csrf
-                    <input type="hidden" name="numero_carte" value="{{ $epargne->numero_carte }}">
-
-                    <div>
-                        <label class="block mb-2 text-sm font-bold text-gray-700">Montant à Déposer (FC)</label>
-                        <input type="number" name="montant_depose" min="1"
-                            class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-kzz-blue focus:border-kzz-blue"
-                            required>
-                    </div>
-
-                    <div>
-                        <label class="block mb-2 text-sm font-bold text-gray-700">Nom du Déposant</label>
-                        <input type="text" name="nom_deposant"
-                            class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-kzz-blue focus:border-kzz-blue"
-                            required>
-                    </div>
-
-                    <div>
-                        <label class="block mb-2 text-sm font-bold text-gray-700">Lien avec le Compte</label>
-                        <select name="lien_deposant"
-                            class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-kzz-blue focus:border-kzz-blue"
-                            required>
-                            <option value="proprietaire">Propriétaire</option>
-                            <option value="delegue">Délégué</option>
-                        </select>
-                    </div>
-
-                    <div class="flex items-center justify-end pt-4 border-t">
-                        <button type="button"
-                            class="px-5 py-2.5 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-blue-700 focus:ring-4 focus:outline-none focus:ring-gray-200 mr-3"
-                            data-modal-hide="depot-modal-{{ $epargne->id }}">Annuler</button>
-                        <button type="submit"
-                            class="px-5 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300">Effectuer
-                            le Dépôt</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    {{-- Modal Retrait --}}
-    <div id="retrait-modal-{{ $epargne->id }}" tabindex="-1" aria-hidden="true"
-        class="fixed inset-0 z-50 hidden overflow-y-auto overflow-x-hidden">
-        <div class="relative p-4 w-full max-w-md max-h-full">
-            <div class="relative bg-white rounded-lg shadow-xl">
-                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
-                    <h3 class="text-lg font-semibold text-kzz-black">Retrait - {{ $epargne->nom_complet }}</h3>
-                    <button type="button"
-                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
-                        data-modal-hide="retrait-modal-{{ $epargne->id }}">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 14 14">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                        </svg>
-                    </button>
-                </div>
-
-                <form action="{{ route('finance.epargnes.decaisse', $epargne) }}" method="POST"
-                    class="p-4 md:p-5 space-y-4">
-                    @csrf
-                    @method('POST')
-
-                    <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <div class="ml-3">
-                                <h3 class="text-sm font-medium text-yellow-800">Attention</h3>
-                                <p class="text-sm text-yellow-700 mt-1">Un seul décaissement est autorisé par mois.
-                                    Solde actuel: {{ number_format($epargne->solde_actuel, 0, ',', ' ') }} FC</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-end pt-4 border-t">
-                        <button type="button"
-                            class="px-5 py-2.5 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-blue-700 focus:ring-4 focus:outline-none focus:ring-gray-200 mr-3"
-                            data-modal-hide="retrait-modal-{{ $epargne->id }}">Annuler</button>
-                        <button type="submit"
-                            class="px-5 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300">Effectuer
-                            le Retrait</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-@endforeach
