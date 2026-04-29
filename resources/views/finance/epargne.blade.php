@@ -120,7 +120,7 @@
                     <h2 class="text-xl font-bold text-kzz-black">Comptes d'Épargne</h2>
                     <p class="text-gray-500 text-sm">Gestion des comptes épargne et transactions</p>
                 </div>
-                <div class="w-full md:w-auto">
+                <div class="w-full md:w-auto flex gap-3">
                     <button type="button" data-modal-target="create-epargne-modal" data-modal-toggle="create-epargne-modal"
                         class="w-full flex items-center justify-center text-white bg-kzz-green hover:bg-opacity-90 font-bold rounded-xl text-sm px-6 py-3.5 transition-all shadow-md uppercase tracking-wider">
                         <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -131,6 +131,15 @@
                 </div>
             </div>
 
+            <div class="px-6 pb-4">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                    <div class="w-full md:w-80">
+                        <label for="searchEpargne" class="text-sm font-semibold text-gray-700">Rechercher</label>
+                        <input id="searchEpargne" type="search" placeholder="Nom, numéro de carte, fréquence..."
+                            class="mt-2 w-full p-3 border border-gray-300 rounded-xl focus:border-kzz-blue focus:ring-kzz-blue outline-none" />
+                    </div>
+                </div>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left text-gray-500">
                     <thead class="text-xs text-white uppercase bg-kzz-blue font-title tracking-widest">
@@ -143,7 +152,7 @@
                             <th scope="col" class="px-6 py-4 text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody id="epargneTableBody" class="divide-y divide-gray-100">
                         @forelse($epargnes as $epargne)
                             <tr class="bg-white hover:bg-blue-50/40 transition-colors">
                                 <th scope="row" class="px-6 py-4 font-semibold text-gray-900 whitespace-nowrap">
@@ -154,8 +163,10 @@
                                 </th>
                                 <td class="px-6 py-4 font-mono text-sm">{{ $epargne->numero_carte }}</td>
                                 <td class="px-6 py-4 font-bold text-green-600">
-                                    {{ number_format($epargne->solde_actuel, 0, ',', ' ') }} FC</td>
-                                <td class="px-6 py-4">{{ number_format($epargne->montant_cible, 0, ',', ' ') }} FC</td>
+                                    {{ number_format($epargne->solde, 0, ',', ' ') }} FC</td>
+                                <td class="px-6 py-4">
+                                    {{ number_format($epargne->montant_reference ?? $epargne->montant_cible, 0, ',', ' ') }}
+                                    FC</td>
                                 <td class="px-6 py-4">
                                     <span
                                         class="px-2 py-1 rounded-full text-xs font-medium
@@ -202,49 +213,31 @@
             </div>
         </div>
 
-        {{-- Transactions récentes --}}
-        @if ($transactionsRecentes->count() > 0)
-            <div class="mt-8 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                <div class="p-6 border-b border-gray-100">
-                    <h3 class="text-lg font-bold text-kzz-black">Transactions Récentes</h3>
-                    <p class="text-gray-500 text-sm">Derniers mouvements sur les comptes épargne</p>
-                </div>
-                <div class="p-6">
-                    <div class="space-y-4">
-                        @foreach ($transactionsRecentes as $transaction)
-                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                                <div class="flex items-center space-x-4">
-                                    <div
-                                        class="p-2 rounded-full {{ $transaction->montant_depose > 0 ? 'bg-green-100' : 'bg-red-100' }}">
-                                        <svg class="w-5 h-5 {{ $transaction->montant_depose > 0 ? 'text-green-600' : 'text-red-600' }}"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="{{ $transaction->montant_depose > 0 ? 'M12 4v16m8-8H4' : 'M20 12H4' }}" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p class="font-semibold text-gray-900">{{ $transaction->epargne->nom_complet }}
-                                        </p>
-                                        <p class="text-sm text-gray-500">
-                                            {{ $transaction->date_transaction->format('d/m/Y H:i') }}</p>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <p
-                                        class="font-bold {{ $transaction->montant_depose > 0 ? 'text-green-600' : 'text-red-600' }}">
-                                        {{ $transaction->montant_depose > 0 ? '+' : '' }}{{ number_format($transaction->montant_depose, 0, ',', ' ') }}
-                                        FC
-                                    </p>
-                                    <p class="text-xs text-gray-500">{{ $transaction->nom_deposant }}</p>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        @endif
+        @foreach ($epargnes as $epargne)
+            @include('finance.modals.transaction_epargne_modal', ['epargne' => $epargne])
+        @endforeach
 
         {{-- Modals pour création et transactions --}}
         @include('finance.modals.epargne-modals')
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const searchInput = document.getElementById('searchEpargne');
+                const tableBody = document.getElementById('epargneTableBody');
+
+                if (!searchInput || !tableBody) {
+                    return;
+                }
+
+                searchInput.addEventListener('input', function() {
+                    const filter = this.value.toLowerCase();
+
+                    tableBody.querySelectorAll('tr').forEach(function(row) {
+                        const text = row.innerText.toLowerCase();
+                        row.style.display = text.includes(filter) ? '' : 'none';
+                    });
+                });
+            });
+        </script>
     </div>
 @endsection

@@ -93,7 +93,8 @@ Route::middleware('auth')->group(function () {
         Route::prefix('epargnes')->name('epargnes.')->group(function () {
             Route::post('/', [EpargneController::class, 'store'])->name('store');
             Route::post('/depose', [EpargneController::class, 'depose'])->name('depose');
-            Route::post('/{id}/decaisse', [EpargneController::class, 'decaisse'])->name('decaisse');
+            Route::post('/{id}/retrait', [EpargneController::class, 'retrait'])->name('retrait');
+            Route::post('/{id}/decaisse', [EpargneController::class, 'retrait'])->name('decaisse');
         });
     });
     

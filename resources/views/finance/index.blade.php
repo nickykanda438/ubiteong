@@ -115,6 +115,36 @@
             </div>
         </div>
 
+        @isset($transactionsRecentes)
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+                <div class="p-6 border-b border-gray-100">
+                    <h3 class="text-lg font-bold text-kzz-black">Transactions Épargne Récentes</h3>
+                    <p class="text-gray-500 text-sm">Derniers mouvements sur les comptes épargne</p>
+                </div>
+                <div class="p-6 space-y-4">
+                    @forelse($transactionsRecentes as $transaction)
+                        <div
+                            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-semibold text-kzz-black">{{ $transaction->epargne->nom_complet ?? 'Compte' }}</p>
+                                <p class="text-sm text-gray-500">{{ $transaction->date_transaction->format('d/m/Y H:i') }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p
+                                    class="font-bold {{ $transaction->montant_depose > 0 ? 'text-green-600' : 'text-red-600' }}">
+                                    {{ $transaction->montant_depose > 0 ? '+' : '-' }}{{ number_format(abs($transaction->montant_depose), 0, ',', ' ') }}
+                                    FC
+                                </p>
+                                <p class="text-xs text-gray-500">{{ $transaction->nom_deposant }}</p>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="p-6 text-center text-gray-500 italic">Aucune transaction récente disponible.</div>
+                    @endforelse
+                </div>
+            </div>
+        @endisset
+
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
 
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -135,7 +165,8 @@
                         <tbody>
                             @forelse($creditsRecents as $credit)
                                 <tr class="bg-white border-b hover:bg-gray-50 transition">
-                                    <td class="px-6 py-4 font-medium text-kzz-black">{{ $credit->membre->nom_complet }}</td>
+                                    <td class="px-6 py-4 font-medium text-kzz-black">{{ $credit->membre->nom_complet }}
+                                    </td>
                                     <td class="px-6 py-4 text-right font-bold">
                                         {{ number_format($credit->montant_principal, 0, ',', ' ') }} {{ $credit->devise }}
                                     </td>
@@ -152,7 +183,8 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="px-6 py-10 text-center italic opacity-50">Aucune donnée crédit
+                                    <td colspan="3" class="px-6 py-10 text-center italic opacity-50">Aucune donnée
+                                        crédit
                                         disponible</td>
                                 </tr>
                             @endforelse
