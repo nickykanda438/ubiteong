@@ -81,6 +81,10 @@ class EpargneController extends Controller
                 'lien_deposant' => $validated['lien_deposant'],
                 'numero_carte_utilise' => $validated['numero_carte'],
             ]);
+
+            // Mettre à jour le solde
+            $epargne->solde_actuel += $validated['montant'];
+            $epargne->save();
         });
 
         return back()->with('success', 'Dépôt effectué avec succès.');
@@ -93,27 +97,68 @@ class EpargneController extends Controller
     {
         $validated = $request->validate([
             'numero_carte' => 'required|exists:epargnes,numero_carte',
-            'montant' => 'nullable|numeric|min:1',
+            'montant' => 'required|numeric|min:1',
         ]);
 
         $epargne = Epargne::where('numero_carte', $validated['numero_carte'])->firstOrFail();
 
-        $montant = $validated['montant'] ?? $epargne->solde;
+        $montant = $validated['montant'];
 
         if ($montant > $epargne->solde) {
             return back()->with('error', 'Solde insuffisant.');
         }
 
-        DB::transaction(function () use ($epargne, $montant) {
-
+        DB::transaction(function () use ($epargne, $montant, $validated) {
+            // Enregistrer la transaction (montant négatif pour retrait)
             TransactionEpargne::create([
                 'epargne_id' => $epargne->id,
-                'montant' => $montant,
-                'type' => TransactionEpargne::TYPE_RETRAIT,
-                'date_operation' => now(),
+                'montant_depose' => -$montant,
+                'date_transaction' => now(),
+                'nom_deposant' => 'Retrait',
+                'lien_deposant' => 'proprietaire',
+                'numero_carte_utilise' => $validated['numero_carte'],
             ]);
+
+            // Mettre à jour le solde
+            $epargne->solde_actuel -= $montant;
+            $epargne->save();
         });
 
         return back()->with('success', 'Retrait effectué avec succès.');
+    }
+
+    /**
+     * Évolution de l'épargne (historique détaillé)
+     */
+    public function evolution_epargne($id)
+    {
+        $epargne = Epargne::with('transactions')->findOrFail($id);
+        
+        $historique = TransactionEpargne::where('epargne_id', $id)
+            ->orderBy('date_transaction', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $transactions = TransactionEpargne::where('epargne_id', $id)
+            ->select(
+                DB::raw('DATE(date_transaction) as date'),
+                DB::raw('SUM(montant_depose) as montant'),
+                'nom_deposant',
+                'lien_deposant'
+            )
+            ->groupBy(DB::raw('DATE(date_transaction)'), 'nom_deposant', 'lien_deposant')
+            ->orderBy('date')
+            ->get();
+
+        $currentYearMonth = now()->format('Y-m');
+        $daysInMonth = now()->daysInMonth;
+
+        return view('finance.evolution_epargne', compact(
+            'epargne',
+            'historique',
+            'transactions',
+            'currentYearMonth',
+            'daysInMonth'
+        ));
     }
 }

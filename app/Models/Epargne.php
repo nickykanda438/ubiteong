@@ -69,19 +69,11 @@ class Epargne extends Model
     }
 
     /**
-     * SOLDE RÉEL (versements - retraits)
+     * SOLDE RÉEL (stocké dans solde_actuel)
      */
     public function getSoldeAttribute()
     {
-        $versements = $this->transactions()
-            ->where('montant_depose', '>=', 0)
-            ->sum('montant_depose');
-
-        $retraits = $this->transactions()
-            ->where('montant_depose', '<', 0)
-            ->sum('montant_depose');
-
-        return $versements + $retraits;
+        return $this->solde_actuel ?? 0;
     }
 
     /**

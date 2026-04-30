@@ -25,7 +25,7 @@
                     </button>
                 </div>
 
-                <form action="{{ route('finance.epargnes.depose') }}" method="POST" class="p-6 space-y-5">
+                <form action="{{ route('finance.epargne.depose') }}" method="POST" class="p-6 space-y-5">
                     @csrf
 
                     {{-- Envoi du numéro de carte pour retrouver le compte côté serveur --}}
@@ -136,7 +136,7 @@
                     </button>
                 </div>
 
-                <form action="{{ route('finance.epargnes.retrait', $epargne->id) }}" method="POST"
+                <form action="{{ route('finance.epargne.retrait', $epargne->id) }}" method="POST"
                     class="p-6 space-y-5">
                     @csrf
                     <input type="hidden" name="numero_carte" value="{{ $epargne->numero_carte }}">

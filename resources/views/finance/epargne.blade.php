@@ -175,17 +175,30 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 flex items-center justify-end space-x-2">
+                                    {{-- Nouveau bouton Evolution/Calendrier --}}
+                                    <a href="{{ route('finance.epargne.evolution', $epargne->id) }}"
+                                        class="p-2 text-kzz-blue hover:text-white hover:bg-kzz-blue rounded-lg transition-all transform hover:scale-110"
+                                        title="Voir l'évolution">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </a>
+
                                     <button data-modal-target="depot-modal-{{ $epargne->id }}"
                                         data-modal-toggle="depot-modal-{{ $epargne->id }}"
-                                        class="p-2 text-green-600 hover:text-white hover:bg-green-600 rounded-lg transition-all transform hover:scale-110">
+                                        class="p-2 text-green-600 hover:text-white hover:bg-green-600 rounded-lg transition-all transform hover:scale-110"
+                                        title="Faire un dépôt">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M12 4v16m8-8H4" />
                                         </svg>
                                     </button>
+
                                     <button data-modal-target="retrait-modal-{{ $epargne->id }}"
                                         data-modal-toggle="retrait-modal-{{ $epargne->id }}"
-                                        class="p-2 text-red-600 hover:text-white hover:bg-red-600 rounded-lg transition-all transform hover:scale-110">
+                                        class="p-2 text-red-600 hover:text-white hover:bg-red-600 rounded-lg transition-all transform hover:scale-110"
+                                        title="Faire un retrait">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M20 12H4" />

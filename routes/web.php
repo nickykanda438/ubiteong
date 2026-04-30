@@ -90,11 +90,12 @@ Route::middleware('auth')->group(function () {
         });
 
         // --- GESTION DES ÉPARGNES ---
-        Route::prefix('epargnes')->name('epargnes.')->group(function () {
+        Route::prefix('epargnes')->name('epargne.')->group(function () {
             Route::post('/', [EpargneController::class, 'store'])->name('store');
             Route::post('/depose', [EpargneController::class, 'depose'])->name('depose');
             Route::post('/{id}/retrait', [EpargneController::class, 'retrait'])->name('retrait');
             Route::post('/{id}/decaisse', [EpargneController::class, 'retrait'])->name('decaisse');
+            Route::get('/{id}/evolution', [EpargneController::class, 'evolution_epargne'])->name('evolution');
         });
     });
     

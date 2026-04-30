@@ -13,6 +13,11 @@ class TransactionEpargne extends Model
     const TYPE_RETRAIT = 'retrait';
 
     /**
+     * Table (optionnel mais recommandé si nom complexe)
+     */
+    protected $table = 'transaction_epargnes';
+
+    /**
      * Champs autorisés
      */
     protected $fillable = [
@@ -28,13 +33,13 @@ class TransactionEpargne extends Model
      * Casts
      */
     protected $casts = [
-        'montant_depose' => 'decimal:2',
+        'montant_depose'   => 'decimal:2',
         'date_transaction' => 'date',
-        'lien_deposant' => 'string'
+        'lien_deposant'    => 'string'
     ];
 
     /**
-     * Relation vers compte épargne
+     * Relation : une transaction appartient à une épargne
      */
     public function epargne()
     {
@@ -42,7 +47,7 @@ class TransactionEpargne extends Model
     }
 
     /**
-     * Alias pour montant (pour compatibilité)
+     * Alias montant (compatibilité)
      */
     public function getMontantAttribute()
     {
@@ -50,7 +55,7 @@ class TransactionEpargne extends Model
     }
 
     /**
-     * Alias pour date_operation (pour compatibilité)
+     * Alias date_operation (compatibilité)
      */
     public function getDateOperationAttribute()
     {
@@ -58,15 +63,29 @@ class TransactionEpargne extends Model
     }
 
     /**
-     * Déterminer le type basé sur le montant (positif = versement, négatif = retrait)
+     * Type de transaction (VERSION UNIQUE CORRIGÉE)
+     * - montant >= 0 => versement
+     * - montant < 0  => retrait
      */
     public function getTypeAttribute()
     {
-        return $this->montant_depose >= 0 ? self::TYPE_VERSEMENT : self::TYPE_RETRAIT;
+        return $this->montant_depose >= 0
+            ? self::TYPE_VERSEMENT
+            : self::TYPE_RETRAIT;
     }
 
     /**
-     * Scope : versements uniquement (montants positifs)
+     * Libellé lisible du type
+     */
+    public function getLibelleTypeAttribute()
+    {
+        return $this->type === self::TYPE_VERSEMENT
+            ? 'Versement'
+            : 'Retrait';
+    }
+
+    /**
+     * Scope : versements
      */
     public function scopeVersements($query)
     {
@@ -74,18 +93,10 @@ class TransactionEpargne extends Model
     }
 
     /**
-     * Scope : retraits uniquement (montants négatifs)
+     * Scope : retraits
      */
     public function scopeRetraits($query)
     {
         return $query->where('montant_depose', '<', 0);
-    }
-
-    /**
-     * Accesseur : libellé du type
-     */
-    public function getLibelleTypeAttribute()
-    {
-        return $this->type === self::TYPE_VERSEMENT ? 'Versement' : 'Retrait';
     }
 }

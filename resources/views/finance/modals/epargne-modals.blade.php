@@ -24,7 +24,7 @@
                 </button>
             </div>
 
-            <form action="{{ route('finance.epargnes.store') }}" method="POST" class="p-6 space-y-6">
+            <form action="{{ route('finance.epargne.store') }}" method="POST" class="p-6 space-y-6">
                 @csrf
 
                 {{-- Section Identité --}}
