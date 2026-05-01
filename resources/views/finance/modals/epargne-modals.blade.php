@@ -1,9 +1,10 @@
 {{-- Modal Création Compte Épargne --}}
 <div id="create-epargne-modal" tabindex="-1" aria-hidden="true"
-    class="fixed inset-0 z-50 hidden overflow-y-auto overflow-x-hidden flex items-center justify-center bg-black bg-opacity-50">
+    class="fixed inset-0 z-50 hidden overflow-y-auto overflow-x-hidden items-center justify-center bg-black bg-opacity-50">
     <div class="relative p-4 w-full max-w-2xl max-h-full">
         <div class="relative bg-white rounded-xl shadow-2xl">
 
+            {{-- Header --}}
             <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t bg-gray-50">
                 <div class="flex items-center gap-3">
                     <div class="p-2 bg-kzz-blue bg-opacity-10 rounded-lg">
@@ -24,6 +25,7 @@
                 </button>
             </div>
 
+            {{-- Formulaire --}}
             <form action="{{ route('finance.epargne.store') }}" method="POST" class="p-6 space-y-6">
                 @csrf
 
@@ -93,6 +95,7 @@
                         placeholder="Commune, Quartier, Avenue, N°..."></textarea>
                 </div>
 
+                {{-- Info Box --}}
                 <div class="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 flex items-start gap-3">
                     <svg class="w-5 h-5 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
@@ -106,6 +109,7 @@
                     </div>
                 </div>
 
+                {{-- Footer Actions --}}
                 <div class="flex items-center justify-end gap-3 pt-4 border-t">
                     <button type="button"
                         class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-200"

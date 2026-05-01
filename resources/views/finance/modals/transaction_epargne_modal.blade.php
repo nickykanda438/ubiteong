@@ -1,7 +1,7 @@
 {{-- Modal Versement / Dépôt (par compte spécifique) --}}
 @if (isset($epargne))
     <div id="depot-modal-{{ $epargne->id }}" tabindex="-1" aria-hidden="true"
-        class="fixed inset-0 z-50 hidden overflow-y-auto overflow-x-hidden bg-black bg-opacity-50 flex items-center justify-center">
+        class="fixed inset-0 z-50 hidden overflow-y-auto overflow-x-hidden bg-black bg-opacity-50 items-center justify-center">
         <div class="relative p-4 w-full max-w-md max-h-full">
             <div class="relative bg-white rounded-xl shadow-2xl">
 
@@ -28,7 +28,6 @@
                 <form action="{{ route('finance.epargne.depose') }}" method="POST" class="p-6 space-y-5">
                     @csrf
 
-                    {{-- Envoi du numéro de carte pour retrouver le compte côté serveur --}}
                     <input type="hidden" name="numero_carte" value="{{ $epargne->numero_carte }}">
 
                     <div class="p-4 bg-blue-50 border border-blue-100 rounded-2xl flex justify-between items-center">
@@ -113,7 +112,7 @@
 
     {{-- Modal Retrait --}}
     <div id="retrait-modal-{{ $epargne->id }}" tabindex="-1" aria-hidden="true"
-        class="fixed inset-0 z-50 hidden overflow-y-auto overflow-x-hidden bg-black bg-opacity-50 flex items-center justify-center">
+        class="fixed inset-0 z-50 hidden overflow-y-auto overflow-x-hidden bg-black bg-opacity-50 items-center justify-center">
         <div class="relative p-4 w-full max-w-md max-h-full">
             <div class="relative bg-white rounded-xl shadow-2xl">
 
@@ -214,7 +213,7 @@
 {{-- Modal Dépôt Général --}}
 @if (!isset($epargne))
     <div id="depot-general-modal" tabindex="-1" aria-hidden="true"
-        class="fixed inset-0 z-50 hidden overflow-y-auto overflow-x-hidden bg-black bg-opacity-50 flex items-center justify-center">
+        class="fixed inset-0 z-50 hidden overflow-y-auto overflow-x-hidden bg-black bg-opacity-50 items-center justify-center">
         <div class="relative p-4 w-full max-w-lg max-h-full">
             <div class="relative bg-white rounded-xl shadow-2xl">
 
@@ -239,7 +238,7 @@
                     </button>
                 </div>
 
-                <form action="{{ route('finance.epargnes.depose') }}" method="POST" class="p-6 space-y-5">
+                <form action="{{ route('finance.epargne.depose') }}" method="POST" class="p-6 space-y-5">
                     @csrf
 
                     <div>
