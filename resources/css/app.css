@@ -1,3 +1,58 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* =========================
+   BASE STYLES (Global)
+========================= */
+@layer base {
+    body {
+        @apply font-sans bg-kzz-black text-kzz-black;
+    }
+
+    h1, h2, h3, h4 {
+        @apply font-title;
+    }
+}
+
+/* =========================
+   COMPONENTS (Réutilisables)
+========================= */
+@layer components {
+
+    .input-kzz {
+        @apply w-full p-3 rounded-lg border border-gray-300 bg-gray-50 text-kzz-black 
+               focus:ring-2 focus:ring-kzz-blue focus:border-kzz-blue outline-none transition;
+    }
+
+    .btn-kzz {
+        @apply w-full text-white bg-kzz-blue hover:bg-opacity-90 
+               font-bold rounded-xl text-sm px-5 py-3 
+               transition-all shadow-lg hover:shadow-xl active:scale-[0.98];
+    }
+
+    .card-kzz {
+        @apply bg-white rounded-2xl shadow-2xl border border-kzz-gray p-6;
+    }
+}
+
+/* =========================
+   UTILITIES (Animations etc.)
+========================= */
+@layer utilities {
+
+    .fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}

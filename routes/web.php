@@ -16,7 +16,7 @@ Route::get('/', function () {
 // Dashboard protégé
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware('auth')->name('dashboard');
 
 // Groupe de routes nécessitant une authentification
 Route::middleware('auth')->group(function () {
