@@ -33,7 +33,7 @@
                         data-dropdown-toggle="dropdown-user">
                         <div
                             class="w-8 h-8 rounded-full bg-kzz-green flex items-center justify-center text-white font-bold text-xs font-title">
-                            AK</div>
+                            {{ substr(auth()->user()->name, 0, 2) }}</div>
                         <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path d="M19 9l-7 7-7-7"></path>
                         </svg>
@@ -42,22 +42,27 @@
                     <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow-xl border border-gray-100"
                         id="dropdown-user">
                         <div class="px-4 py-3">
-                            <p class="text-sm font-bold text-kzz-black">Admin KZZ</p>
-                            <p class="text-xs text-gray-500 font-sans">contact@kazwazwa.org</p>
+                            <p class="text-sm font-bold text-kzz-black">{{ auth()->user()->name }}</p>
+                            <p class="text-xs text-gray-500 font-sans">{{ auth()->user()->email }}</p>
                         </div>
                         <ul class="py-1 font-sans">
-                            <li><a href="#"
+                            <li><a href="{{ route('profile.edit') }}"
                                     class="flex items-center gap-2 px-4 py-2 text-sm text-kzz-black hover:bg-kzz-gray"><svg
                                         class="w-4 h-4 text-kzz-blue" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"></path>
                                     </svg> Profil</a></li>
-                            <li><a href="#"
-                                    class="flex items-center gap-2 px-4 py-2 text-sm text-red-600 font-bold hover:bg-red-50"><svg
-                                        class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-width="2"
-                                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-                                        </path>
-                                    </svg> Déconnexion</a></li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="flex items-center gap-2 px-4 py-2 text-sm text-red-600 font-bold hover:bg-red-50 w-full text-left">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-width="2"
+                                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                                            </path>
+                                        </svg> Déconnexion
+                                    </button>
+                                </form>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -70,7 +75,7 @@
         <div class="h-full px-3 pb-4 overflow-y-auto bg-kzz-blue">
             <ul class="space-y-1 font-medium">
                 <li>
-                    <a href="#" class="flex items-center p-2 text-white rounded-lg hover:bg-white/10 group">
+                    <a href="{{ route('dashboard') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-white/10 group">
                         <svg class="w-5 h-5 text-gray-300 group-hover:text-white" fill="currentColor"
                             viewBox="0 0 20 20">
                             <path

@@ -6,7 +6,9 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\CadreController;
 use App\Http\Controllers\CommunicationController;
 use App\Http\Controllers\CreditController;
-use App\Http\Controllers\EpargneController; 
+use App\Http\Controllers\EpargneController;
+use App\Models\Document;
+use App\Models\Cadre; 
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -14,9 +16,9 @@ Route::get('/', function () {
 });
 
 // Dashboard protégé
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware('auth')->name('dashboard');
+Route::get('/dashboard', [CreditController::class, 'viewDashboard'])
+    ->middleware('auth')
+    ->name('dashboard');
 
 // Groupe de routes nécessitant une authentification
 Route::middleware('auth')->group(function () {

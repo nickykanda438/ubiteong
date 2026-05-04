@@ -7,12 +7,76 @@ use App\Models\Membre;
 use App\Models\RemboursementCredit;
 use App\Models\Epargne;
 use App\Models\TransactionEpargne;
+use App\Models\Document;
+use App\Models\Cadre;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class CreditController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | VUE DASHBOARD (avec vraies données)
+    |--------------------------------------------------------------------------
+    */
+    public function viewDashboard()
+    {
+        // Statistiques réelles de chaque module
+        $membresTotaux = Membre::count();
+        $documentsTotaux = Document::count() ?? 0;
+        $cadresTotaux = Cadre::count() ?? 0;
+        $creditsEnCours = Credit::where('statut', '!=', 'solde')->count();
+        $totalEpargne = Epargne::sum('solde_actuel') ?? 0;
+
+        // Données pour les graphiques (6 derniers mois)
+        $epargneData = TransactionEpargne::selectRaw(
+            'YEAR(date_transaction) as year, MONTH(date_transaction) as month, SUM(montant_depose) as total'
+        )
+            ->whereBetween('date_transaction', [Carbon::now()->subMonths(5)->startOfMonth(), Carbon::now()->endOfMonth()])
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc')
+            ->get()
+            ->keyBy(fn($item) => sprintf('%04d-%02d', $item->year, $item->month));
+
+        $creditData = Credit::selectRaw(
+            'YEAR(date_deblocage) as year, MONTH(date_deblocage) as month, COUNT(*) as total'
+        )
+            ->whereNotNull('date_deblocage')
+            ->whereBetween('date_deblocage', [Carbon::now()->subMonths(5)->startOfMonth(), Carbon::now()->endOfMonth()])
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc')
+            ->get()
+            ->keyBy(fn($item) => sprintf('%04d-%02d', $item->year, $item->month));
+
+        $months = ['01' => 'Jan', '02' => 'Fév', '03' => 'Mar', '04' => 'Avr', '05' => 'Mai', '06' => 'Juin', '07' => 'Juil', '08' => 'Aoû', '09' => 'Sep', '10' => 'Oct', '11' => 'Nov', '12' => 'Déc'];
+
+        $labels = [];
+        $epargneChartData = [];
+        $creditChartData = [];
+
+        for ($i = 5; $i >= 0; $i--) {
+            $date = Carbon::now()->subMonths($i);
+            $key = sprintf('%04d-%02d', $date->year, $date->month);
+            $labels[] = $months[$date->format('m')];
+            $epargneChartData[] = (float) ($epargneData[$key]->total ?? 0);
+            $creditChartData[] = (int) ($creditData[$key]->total ?? 0);
+        }
+
+        return view('dashboard', compact(
+            'membresTotaux',
+            'documentsTotaux',
+            'cadresTotaux',
+            'creditsEnCours',
+            'totalEpargne',
+            'labels',
+            'epargneChartData',
+            'creditChartData'
+        ));
+    }
+
     /*
     |--------------------------------------------------------------------------
     | TABLEAU DE BORD FINANCIER (PAGE D'ACCUEIL)
