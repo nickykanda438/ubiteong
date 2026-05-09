@@ -19,16 +19,6 @@
         
         @include('layouts.sidebar') 
 
-        <main class="p-4 sm:ml-64 pt-24 min-h-screen">
-            <div class="mt-2">
-                @if (request()->routeIs('dashboard'))
-                    @include('partials.dashboard')
-                @else
-                    @yield('content')
-                @endif
-            </div>
-        </main>
-
     </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
