@@ -7,6 +7,7 @@ use App\Http\Controllers\CadreController;
 use App\Http\Controllers\CommunicationController;
 use App\Http\Controllers\CreditController;
 use App\Http\Controllers\EpargneController;
+use App\Http\Controllers\AdhesionController;
 use App\Models\Document;
 use App\Models\Cadre; 
 use Illuminate\Support\Facades\Route;
@@ -14,6 +15,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Route pour soumettre une adhésion (formulaire public)
+Route::post('/adhesion/store', [AdhesionController::class, 'store'])->name('adhesion.store');
 
 // Dashboard protégé
 Route::get('/dashboard', [CreditController::class, 'viewDashboard'])
@@ -64,6 +68,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/communique', [CommunicationController::class, 'storeCommunique'])->name('communique.store');
         Route::post('/event', [CommunicationController::class, 'storeEvent'])->name('event.store');
         Route::delete('/{model}/{id}', [CommunicationController::class, 'destroy'])->name('communication.destroy');
+    });
+
+    // --- MODULE ADHÉSION ---
+    Route::prefix('adhesion')->name('adhesion.')->group(function () {
+        Route::get('/', [AdhesionController::class, 'index'])->name('index');
+        Route::delete('/{adhesion}', [AdhesionController::class, 'destroy'])->name('destroy');
     });
 
     // --- MODULE FINANCE ---

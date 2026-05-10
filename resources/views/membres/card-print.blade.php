@@ -1,209 +1,157 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carte Membre - {{ $membre->nom_complet }}</title>
+    <title>Carte Officielle - {{ $membre->nom_complet }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: #f3f4f6;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #e5e7eb; }
 
-        /* Format Standard ID-1 (Carte bancaire) */
         .card-container {
             width: 85.6mm;
             height: 53.98mm;
-            position: relative;
             background: white;
-            overflow: hidden;
+            border-radius: 4mm;
             display: flex;
-            box-sizing: border-box;
+            overflow: hidden;
+            position: relative; 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
         .sidebar {
-            width: 32%;
-            background-color: #0c4a6e;
+            width: 30%;
+            background: #0f172a;
             color: white;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            padding: 10px 4px;
+            padding: 12px 5px;
             z-index: 10;
         }
 
         .main-content {
-            width: 68%;
-            padding: 10px 14px;
+            width: 70%;
+            padding: 15px 20px;
             position: relative;
-            display: flex;
-            flex-direction: column;
         }
 
-        .watermark {
+        /* Fix QR Code Absolu */
+        .qr-anchor {
             position: absolute;
-            top: 50%;
-            left: 55%;
-            transform: translate(-50%, -50%);
-            opacity: 0.05;
-            width: 65%;
-            pointer-events: none;
+            bottom: 12px;  
+            right: 12px;   
+            background: white;
+            padding: 3px;
+            border-radius: 6px;
+            border: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        @media print {
-            .no-print {
-                display: none;
-            }
+        .label-style { font-size: 5px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+        .value-style { font-size: 8px; font-weight: 700; color: #1e293b; text-transform: uppercase; }
 
-            body {
-                background: none;
-                padding: 0;
-            }
-        }
+        @media print { .no-print { display: none; } }
     </style>
 </head>
+<body class="flex flex-col items-center justify-center min-h-screen">
 
-<body class="flex flex-col items-center justify-center min-h-screen p-4">
-
-    <div class="mb-6 flex gap-4 no-print">
-        <a href="{{ route('membres.index') }}"
-            class="flex items-center gap-2 bg-gray-800 text-white px-5 py-2 rounded-lg font-semibold hover:bg-gray-900 transition shadow-md text-sm">
-            Retour
+    <div class="no-print mb-8 flex gap-4">
+        <a href="{{ route('membres.index') }}" 
+           class="flex items-center gap-2 bg-gray-700 hover:bg-gray-800 text-white px-5 py-2 rounded-lg font-bold shadow transition-all text-sm">
+            ← Retour à la liste
         </a>
-        <button onclick="downloadCard()"
-            class="flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition shadow-md text-sm">
-            Télécharger l'image (JPG)
+        
+        <button onclick="exportCard()" 
+                class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-bold shadow-lg transition-all text-sm">
+            ⬇ Télécharger la Carte (HD)
         </button>
     </div>
 
-    <div id="memberCard" class="card-container rounded-xl shadow-2xl border border-gray-200">
-
-        <div class="sidebar shadow-xl">
-            <div class="text-center">
-                <img src="{{ asset('images/logo_ong.png') }}" class="w-8 h-8 mx-auto mb-1 object-contain">
-                <h2 class="text-[7.5px] font-black uppercase leading-tight tracking-tighter">Fondation Kazwazwa</h2>
-                <p class="text-[4px] opacity-70 tracking-widest uppercase">Solidarité • Développement</p>
+    <div id="captureArea" class="card-container">
+        
+        <div class="sidebar">
+            <img src="{{ asset('images/logoubite.png') }}" class="w-10 h-10 object-contain mb-2" alt="Logo">
+            <p class="text-[5px] font-black tracking-widest text-blue-400 mb-4 uppercase text-center">Fondation Kazwazwa</p>
+            
+            <div class="w-18 h-20 rounded-lg overflow-hidden border-2 border-slate-700 shadow-xl mb-3">
+                <img src="{{ $membre->photo_url }}" class="w-full h-full object-cover">
             </div>
 
-            <div class="w-18 h-22 border-[1.5px] border-white/40 rounded-md overflow-hidden bg-slate-800 shadow-md">
-                @if ($membre->photo_membre)
-                    <img src="{{ asset('storage/' . $membre->photo_membre) }}" class="w-full h-full object-cover">
-                @else
-                    <div class="flex items-center justify-center h-full text-[6px] text-gray-500">PAS DE PHOTO</div>
-                @endif
-            </div>
-
-            <div class="text-center w-full px-1">
-                <p class="text-[8px] font-extrabold uppercase truncate leading-none mb-1">
-                    {{ Str::limit($membre->nom_complet, 20) }}</p>
-                <div
-                    class="bg-green-600 text-white text-[6px] py-0.5 px-2 rounded-full font-bold uppercase tracking-tight inline-block">
-                    {{ $membre->fonction }}
-                </div>
+            <p class="text-[7px] font-bold text-center leading-tight">{{ $membre->nom_complet }}</p>
+            <div class="mt-2 bg-emerald-500 text-[5px] px-3 py-1 rounded-full font-black uppercase">
+                {{ $membre->fonction ?? 'MEMBRE' }}
             </div>
         </div>
 
-        <div class="main-content bg-white">
-            <img src="{{ asset('images/logo_ong.png') }}" class="watermark">
+        <div class="main-content">
+            <h2 class="text-[11px] font-black text-slate-800 uppercase tracking-tighter border-b border-slate-100 pb-1 mb-3">
+                Carte de Membre
+            </h2>
 
-            <div class="flex justify-between items-start border-b border-gray-100 pb-1">
+            <div class="grid grid-cols-1 gap-2">
                 <div>
-                    <h3 class="text-[5.5px] font-bold text-gray-400 uppercase tracking-[0.2em]">Carte Professionnelle
-                    </h3>
-                    <h1 class="text-blue-900 font-black text-[11px] uppercase leading-none mt-0.5">Fondation Kazwazwa
-                    </h1>
+                    <p class="label-style">Nom Complet</p>
+                    <p class="text-[9px] font-black text-slate-900 uppercase">{{ $membre->nom_complet }}</p>
                 </div>
-                <div class="text-right">
-                    <img src="{{ asset('images/drc_flag.png') }}" class="w-6 h-3.5 shadow-sm rounded-sm mb-1">
-                    <p class="text-[5px] font-black text-gray-800 uppercase leading-none">{{ $membre->type_membre }}</p>
+
+                <div class="flex gap-8">
+                    <div>
+                        <p class="label-style">Lieu</p>
+                        <p class="value-style">{{ $membre->lieu_naissance ?? 'KENGE' }}</p>
+                    </div>
+                    <div>
+                        <p class="label-style">Adhésion</p>
+                        <p class="value-style">{{ $membre->date_adhesion ? $membre->date_adhesion->format('d/m/Y') : '12/05/2025' }}</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-8">
+                    <div>
+                        <p class="label-style">Ancienneté</p>
+                        <p class="value-style">{{ intval($membre->anciennete) }} ans</p>
+                    </div>
+                    <div>
+                        <p class="label-style">N° Membre</p>
+                        <p class="text-[9px] font-black text-blue-700">{{ $membre->numero_membre }}</p>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="label-style">Expiration</p>
+                    <p class="text-[7.5px] font-black text-red-600">31 DÉC 2026</p>
                 </div>
             </div>
 
-            <div class="flex flex-col gap-1.5 mt-2.5 flex-1">
-                <div>
-                    <label class="text-[5px] text-gray-400 font-bold uppercase block leading-tight">Nom complet
-                        :</label>
-                    <span
-                        class="text-[9.5px] font-extrabold text-gray-900 uppercase leading-none">{{ $membre->nom_complet }}</span>
-                </div>
-
-                <div>
-                    <label class="text-[5px] text-gray-400 font-bold uppercase block leading-tight">Fonction & Lieu
-                        :</label>
-                    <span class="text-[8px] font-bold text-gray-800 uppercase leading-none">
-                        {{ $membre->fonction }} ({{ $membre->lieu_naissance ?? 'KINSHASA' }})
-                    </span>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="text-[5px] text-gray-400 font-bold uppercase block leading-tight">Adhésion
-                            :</label>
-                        <span class="text-[7.5px] font-bold text-gray-800 uppercase leading-none">
-                            {{ $membre->date_adhesion ? $membre->date_adhesion->format('d/m/Y') : 'N/A' }}
-                        </span>
-                    </div>
-                    <div>
-                        <label class="text-[5px] text-gray-400 font-bold uppercase block leading-tight">Ancienneté
-                            :</label>
-                        <span class="text-[7.5px] font-bold text-gray-800 uppercase leading-none">
-                            {{ intval($membre->anciennete) }} ans
-                        </span>
-                    </div>
-                </div>
+            <div class="qr-anchor">
+                {!! QrCode::size(50)->margin(1)->generate('https://verify.kazwazwa.com/' . $membre->numero_membre) !!}
             </div>
 
-            <div class="flex justify-between items-end mt-auto pt-1 border-t border-gray-100">
-                <div class="flex flex-col gap-1">
-                    <div class="bg-slate-100 px-1.5 py-0.5 rounded border border-gray-200 inline-block">
-                        <span class="text-[5.5px] font-bold text-gray-500 uppercase italic">N° :</span>
-                        <span class="text-[7px] font-black text-blue-900">{{ $membre->numero_membre }}</span>
-                    </div>
-                    <p class="text-[5px] font-bold text-gray-500 uppercase">Expire le : <span
-                            class="text-red-600 font-black">31 DÉC 2026</span></p>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <div class="text-center min-w-[35px] border-r border-gray-100 pr-2">
-                        <img src="{{ asset('images/signature.png') }}" class="h-4 mx-auto mb-0.5 opacity-90">
-                        <p class="text-[4px] font-bold text-gray-400 uppercase leading-none">La Direction</p>
-                    </div>
-                    <div
-                        class="p-0.5 bg-white border border-gray-200 rounded shadow-sm flex items-center justify-center">
-                        {!! QrCode::size(34)->margin(0)->generate('https://votre-site.com/verifier/' . $membre->numero_membre) !!}
-                    </div>
-                </div>
+            <div class="absolute bottom-3 left-5">
+                <img src="{{ asset('images/signature.png') }}" class="h-4 opacity-70">
+                <p class="text-[4px] font-bold text-slate-400 uppercase">Direction</p>
             </div>
         </div>
-
-        <div class="absolute top-0 right-0 w-8 h-8 bg-orange-500 shadow-inner"
-            style="clip-path: polygon(100% 0, 0 0, 100% 100%); opacity: 0.95;"></div>
     </div>
 
     <script>
-        function downloadCard() {
-            const card = document.getElementById('memberCard');
-            // On augmente le scale pour une impression de haute qualité
-            html2canvas(card, {
-                scale: 5,
+        function exportCard() {
+            const area = document.getElementById('captureArea');
+            html2canvas(area, {
+                scale: 4, 
                 useCORS: true,
                 backgroundColor: null,
-                logging: false,
-                width: card.offsetWidth,
-                height: card.offsetHeight
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = 'Carte_{{ Str::slug($membre->nom_complet) }}.jpg';
-                link.href = canvas.toDataURL('image/jpeg', 0.95);
+                link.download = 'Carte_{{ Str::slug($membre->nom_complet) }}.png';
+                link.href = canvas.toDataURL('image/png');
                 link.click();
             });
         }
     </script>
 </body>
-
 </html>

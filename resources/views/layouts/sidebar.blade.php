@@ -94,6 +94,8 @@
                                 class="dropdown-item block p-2 pl-11 text-xs text-blue-100 hover:text-white transition font-sans">Liste des membres</a></li>
                         <li><a href="{{ route('membres.create') }}"
                                 class="dropdown-item block p-2 pl-11 text-xs text-blue-100 hover:text-white transition font-sans">Enregistrement</a></li>
+                        <li><a href="{{ route('adhesion.index') }}"
+                                class="dropdown-item block p-2 pl-11 text-xs text-blue-100 hover:text-white transition font-sans">Liste des adhésions</a></li>
                     </ul>
                 </li>
 

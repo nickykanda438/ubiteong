@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class Membre extends Model
@@ -74,9 +75,10 @@ class Membre extends Model
 
     public function getPhotoUrlAttribute()
     {
-        if ($this->photo_membre) {
+        if ($this->photo_membre && Storage::disk('public')->exists($this->photo_membre)) {
             return asset('storage/' . $this->photo_membre);
         }
+
         return asset('images/default-avatar.png');
     }
 

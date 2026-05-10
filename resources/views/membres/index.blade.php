@@ -148,7 +148,7 @@
                                         <div class="flex items-center">
                                             @if ($membre->photo_membre)
                                                 <img class="w-10 h-10 rounded-full mr-3 object-cover ring-2 ring-gray-100"
-                                                    src="{{ asset('storage/' . $membre->photo_membre) }}"
+                                                    src="{{ $membre->photo_url }}"
                                                     alt="{{ $membre->nom_complet }}">
                                             @else
                                                 <div
